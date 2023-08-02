@@ -1,0 +1,46 @@
+import { User } from "./models";
+
+export const applications: User[] = [
+  {
+    consumerId: 432239449033,
+    phoneNumber: 9404181639,
+    status: "Approved",
+    fullName: "Sai Sameer Kumar Lolla",
+    address: "H.No. 488, Dongorim, Navelim, Salcete, South Goa, Goa",
+    meterNumber: 23894333,
+    sactionedLoad: 3.9,
+    consumerType: "domestic",
+    subsidyRate: 0,
+    phase: 1,
+    supportingDocs: [],
+  },
+  {
+    consumerId: 322394493323,
+    phoneNumber: 88275039639,
+    status: "Rejected",
+    fullName: "Sairaj Kapadi",
+    address: "Shop No. 129, Vodle Bhat, Taleigao, Panaji - Goa",
+    meterNumber: 38943334,
+    sactionedLoad: 11.9,
+    consumerType: "commercial",
+    subsidyRate: 0,
+    phase: 1,
+    supportingDocs: ["https://docs.google.com/12333rf3"],
+  },
+  {
+    consumerId: 223944903332,
+    status: "Pending",
+    phoneNumber: 557373883,
+    fullName: "M/S JSW Steels Ltd",
+    address: "Cuncolim, Goa",
+    meterNumber: 47388339,
+    sactionedLoad: 39,
+    consumerType: "industrial",
+    subsidyRate: 29.3,
+    phase: 3,
+    supportingDocs: [
+      "https://docs.google.com/12333rf3",
+      "https://docs.google.com/12333rf3",
+    ],
+  },
+];
