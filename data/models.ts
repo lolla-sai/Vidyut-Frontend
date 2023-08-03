@@ -4,8 +4,9 @@ import {
   ECSlab,
   IndustrialFCSlab,
   IndustrialSlab,
+  SubsidyDoc,
 } from "./custom";
-import { Timestamp } from "@google-cloud/firestore";
+// import { Timestamp } from "@google-cloud/firestore";
 
 export type Admin = {
   userName: string;
@@ -22,24 +23,25 @@ export type User = {
   consumerType: ConsumerType;
   subsidyRate: number;
   status: "Approved" | "Rejected" | "Pending";
+  rejectionReason: string | null;
   phase: 1 | 3;
-  supportingDocs: Array<string>;
+  supportingDocs: Array<SubsidyDoc>;
 };
 
-export type Billing = {
-  consumerDocId: string;
-  meterNumber: number;
-  currentDate: Timestamp;
-  paymentDate: Timestamp;
-  previousReading: number;
-  consumption: number;
-  breakage: Array<Breakage>;
-  fixedCharge: number;
-  meterRent: number;
-  totalCharge: number;
-  paid: boolean;
-  rateDocId: string;
-};
+// export type Billing = {
+//   consumerDocId: string;
+//   meterNumber: number;
+//   currentDate: Timestamp;
+//   paymentDate: Timestamp;
+//   previousReading: number;
+//   consumption: number;
+//   breakage: Array<Breakage>;
+//   fixedCharge: number;
+//   meterRent: number;
+//   totalCharge: number;
+//   paid: boolean;
+//   rateDocId: string;
+// };
 
 export type DomesticRate = {
   slabs: Array<ECSlab>;

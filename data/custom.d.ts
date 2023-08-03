@@ -28,6 +28,11 @@ type UserSession = {
   loggedIn: boolean;
 };
 
+type SubsidyDoc = {
+  fileName: string;
+  url: string;
+};
+
 declare module "express-session" {
   interface SessionData {
     userData: UserSession;

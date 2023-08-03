@@ -27,17 +27,20 @@ import {
   FiMenu,
 } from "react-icons/fi";
 import { FaUserAlt } from "react-icons/fa";
-
+import NextLink from "next/link";
 import { IconType } from "react-icons";
+import { usePathname } from "next/navigation";
 
 interface LinkItemProps {
   name: string;
   icon: IconType;
+  href: string;
 }
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
   children: React.ReactNode;
+  href: string;
 }
 
 interface MobileProps extends FlexProps {
@@ -49,11 +52,11 @@ interface SidebarProps extends BoxProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Applications", icon: FiHome },
-  { name: "Complaints", icon: FiTrendingUp },
-  { name: "Explore", icon: FiCompass },
-  { name: "Favourites", icon: FiStar },
-  { name: "Settings", icon: FiSettings },
+  { name: "Applications", icon: FiHome, href: "/applications" },
+  { name: "Complaints", icon: FiTrendingUp, href: "/complaints" },
+  { name: "Bills", icon: FiCompass, href: "/bills" },
+  { name: "Slabs And Rates", icon: FiStar, href: "/rates" },
+  { name: "Settings", icon: FiSettings, href: "/settings" },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -73,14 +76,16 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           fontSize="2xl"
           fontFamily="monospace"
           fontWeight="bold"
-          color="orange.400"
+          color="orange.500"
+          href="/"
+          as={NextLink}
         >
           Vidyut
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
+        <NavItem key={link.name} icon={link.icon} href={link.href}>
           {link.name}
         </NavItem>
       ))}
@@ -88,12 +93,15 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   );
 };
 
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
+  const pathName = usePathname();
+
   return (
     <Box
-      as="a"
-      href="#"
+      as={NextLink}
+      href={href}
       style={{ textDecoration: "none" }}
+      // _active={{ bg: "red" }}
       _focus={{ boxShadow: "none" }}
     >
       <Flex
@@ -103,8 +111,10 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
+        bg={pathName === href ? "orange.500" : "white"}
+        color={pathName === href ? "white" : "black"}
         _hover={{
-          bg: "green.400",
+          bg: "orange.600",
           color: "white",
         }}
         {...rest}
@@ -177,7 +187,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 const SidebarWithHeader = ({ children }: { children: React.ReactNode }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  //  bg={useColorModeValue("gray.50", "gray.900")}
   return (
     <Box minH="100vh" bg={useColorModeValue("white", "gray.900")}>
       <SidebarContent
