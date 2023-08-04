@@ -43,19 +43,36 @@ export type User = {
 //   rateDocId: string;
 // };
 
+export type CommercialFCSlab = {
+  range: "0-20" | "20-90";
+  pricePerUnit: number;
+};
+
 export type DomesticRate = {
   slabs: Array<ECSlab>;
   fixedChargeRate: number;
+  latest: boolean;
+  validFrom: Date;
+  validTill: Date;
+  type: "Domestic";
 };
 
 export type IndustrialRate = {
-  slabs: Array<ECSlab>;
+  slabs: Array<IndustrialSlab>;
   fixedChargeRate: number;
+  latest: boolean;
+  validFrom: Date;
+  validTill: Date;
+  type: "Industrial";
 };
 
 export type CommercialRate = {
-  slabs: Array<IndustrialSlab>;
-  fixedChargeRate: Array<IndustrialFCSlab>;
+  slabs: Array<ECSlab>;
+  fixedChargeRate: Array<CommercialFCSlab>;
+  latest: boolean;
+  validFrom: Date;
+  validTill: Date;
+  type: "Commercial";
 };
 
 export type Complaint = {

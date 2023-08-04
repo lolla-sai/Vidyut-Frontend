@@ -10,7 +10,6 @@ export type Breakage = {
 export type ECSlab = {
   range: "0-100" | "101-200" | "201-300" | "301-400" | ">400";
   pricePerUnit: number;
-  upperLimit: number;
 };
 
 export type IndustrialSlab = {

@@ -142,7 +142,12 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
               <Text minW="15ch" fontWeight="semibold">
                 Phone Number:{" "}
               </Text>
-              <Input value={consumerDetail.phoneNumber} maxW="40ch" size="sm" />
+              <Input
+                value={consumerDetail.phoneNumber}
+                type="number"
+                maxW="40ch"
+                size="sm"
+              />
             </HStack>
 
             {/* Address */}
@@ -236,7 +241,15 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 {/* Rejection Reason */}
                 <Box>
                   <Text minW="15ch" fontWeight="semibold" mb="2">
-                    Rejection Reason:
+                    Rejection Reason{" "}
+                    <span
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      *
+                    </span>
+                    :
                   </Text>
                   <Textarea
                     value={consumerDetail.rejectionReason || ""}
