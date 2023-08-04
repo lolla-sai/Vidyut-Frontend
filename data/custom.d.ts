@@ -1,5 +1,5 @@
 import "express-session";
-export type ConsumerType = "domestic" | "commercial" | "industrial";
+export type ConsumerType = "Domestic" | "Commercial" | "Industrial";
 
 export type Breakage = {
   quantity: number;

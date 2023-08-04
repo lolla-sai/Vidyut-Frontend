@@ -34,8 +34,8 @@ export default function SplitScreen() {
         { withCredentials: true }
       );
 
-      if (res.data) {
-        router.push("/applications")
+      if (res.data.success) {
+        router.push("/applications");
       }
     }
   };

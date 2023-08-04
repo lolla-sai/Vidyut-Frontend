@@ -52,8 +52,8 @@ export type DomesticRate = {
   slabs: Array<ECSlab>;
   fixedChargeRate: number;
   latest: boolean;
-  validFrom: Date;
-  validTill: Date;
+  validFrom: string; // "MM-DD-YYYY"
+  validTill: string; // "MM-DD-YYYY"
   type: "Domestic";
 };
 
@@ -61,8 +61,8 @@ export type IndustrialRate = {
   slabs: Array<IndustrialSlab>;
   fixedChargeRate: number;
   latest: boolean;
-  validFrom: Date;
-  validTill: Date;
+  validFrom: string;
+  validTill: string;
   type: "Industrial";
 };
 
@@ -70,8 +70,8 @@ export type CommercialRate = {
   slabs: Array<ECSlab>;
   fixedChargeRate: Array<CommercialFCSlab>;
   latest: boolean;
-  validFrom: Date;
-  validTill: Date;
+  validFrom: string;
+  validTill: string;
   type: "Commercial";
 };
 

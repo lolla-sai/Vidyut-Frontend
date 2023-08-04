@@ -26,8 +26,9 @@ export const domesticSlabs: DomesticRate = {
   ],
   fixedChargeRate: 15,
   latest: true,
-  validFrom: new Date("2022-09-24"),
-  validTill: new Date("2023-09-22"),
+  validFrom: "2022-09-24",
+  validTill: "2023-09-22",
+  type: "Domestic",
 };
 
 export const industrialSlabs: IndustrialRate = {
@@ -43,8 +44,9 @@ export const industrialSlabs: IndustrialRate = {
   ],
   fixedChargeRate: 15,
   latest: true,
-  validFrom: new Date("2022-09-24"),
-  validTill: new Date("2023-09-22"),
+  validFrom: "2022-09-24",
+  validTill: "2023-09-22",
+  type: "Industrial",
 };
 
 export const commercialSlab: CommercialRate = {
@@ -81,8 +83,9 @@ export const commercialSlab: CommercialRate = {
     },
   ],
   latest: true,
-  validFrom: new Date("2022-09-24"),
-  validTill: new Date("2023-09-22"),
+  validFrom: "2022-09-24",
+  validTill: "2023-09-22",
+  type: "Commercial",
 };
 
 export const applications: User[] = [
