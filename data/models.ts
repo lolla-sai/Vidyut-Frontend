@@ -1,5 +1,6 @@
 import {
   Breakage,
+  CommercialFCSlab,
   ConsumerType,
   ECSlab,
   IndustrialSlab,
@@ -46,11 +47,6 @@ export type Billing = {
   paid: boolean;
   rateDocId: string;
   latest: boolean;
-};
-
-export type CommercialFCSlab = {
-  range: "0-20" | "20-90";
-  pricePerUnit: number;
 };
 
 export type DomesticRate = {

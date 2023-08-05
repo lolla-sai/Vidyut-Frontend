@@ -1,6 +1,6 @@
 "use client";
 
-import { ConsumerType } from "@/data/custom";
+import { CommercialFCSlab, ConsumerType } from "@/data/custom";
 import { commercialSlab, domesticSlabs, industrialSlabs } from "@/data/dummy";
 import { CommercialRate, DomesticRate, IndustrialRate } from "@/data/models";
 import {
@@ -20,9 +20,19 @@ import {
   Thead,
   Tr,
   VStack,
+  Button,
+  Spacer,
 } from "@chakra-ui/react";
 
 import React, { useEffect, useState } from "react";
+import { UseQueryResult, useQuery } from "react-query";
+import { getCurrentRates } from "@/services/admin.service";
+import axios from "axios";
+import {
+  CreateCommercialRate,
+  CreateDomesticRate,
+  CreateIndustrialRate,
+} from "@/types/requestBody.types";
 
 function page({
   searchParams: { type },
@@ -30,38 +40,69 @@ function page({
   searchParams: { type: ConsumerType | null };
 }) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [consumerType, setConsumerType] = useState<ConsumerType | string>(
-    type || ""
+  const [consumerType, setConsumerType] = useState<ConsumerType | null>(
+    type || "Domestic"
   );
   const [rateCard, setRateCard] = useState<
     DomesticRate | IndustrialRate | CommercialRate | null
   >(null);
+  const rates: UseQueryResult<{
+    domesticRate: DomesticRate;
+    commercialRate: CommercialRate;
+    industrialRate: IndustrialRate;
+  }> = useQuery({ queryKey: "rates", queryFn: getCurrentRates });
+  const [fixedChargeRate, setFixedChargeRate] = useState<
+    number | Array<CommercialFCSlab> | undefined
+  >(rateCard?.fixedChargeRate);
 
   useEffect(() => {
-    if (consumerType !== "") {
-      setLoading(true);
-
-      setTimeout(() => {
-        switch (consumerType) {
-          case "domestic":
-            setRateCard(domesticSlabs);
-            break;
-
-          case "commercial":
-            setRateCard(commercialSlab);
-            break;
-
-          case "industrial":
-            setRateCard(industrialSlabs);
-            break;
-
-          default:
-            break;
-        }
-        setLoading(false);
-      }, 2000);
+    console.log("Value Changed");
+    setLoading(true);
+    if (rates.data) {
+      switch (consumerType) {
+        case "Domestic":
+          console.log(rates.data);
+          setRateCard(rates.data?.domesticRate);
+          break;
+        case "Commercial":
+          setRateCard(rates.data?.commercialRate);
+          break;
+        case "Industrial":
+          setRateCard(rates.data?.industrialRate);
+          break;
+      }
+      setLoading(false);
     }
-  }, [consumerType]);
+  }, [consumerType, rates.data]);
+
+  const handleAddNewRate = async () => {
+    var res = null;
+
+    switch (consumerType) {
+      case "Domestic":
+        res = (
+          await axios.post(
+            "http://localhost:8080/api/billing/createRate",
+            {} as CreateDomesticRate,
+            { withCredentials: true }
+          )
+        ).data;
+
+        break;
+      case "Commercial":
+        break;
+      case "Industrial":
+        break;
+    }
+  };
+
+  useEffect(() => {
+    console.log(rateCard);
+  }, [rateCard]);
+
+  useEffect(() => {
+    console.log(rates);
+  }, [rates]);
 
   return (
     <Box>
@@ -72,35 +113,42 @@ function page({
           edit them.
         </Text>
         <Select
-          value={consumerType}
+          value={consumerType ? (consumerType as string) : ""}
           onChange={(e) => {
-            setConsumerType(
-              ["domestic", "commercial", "industrial"].indexOf(
-                e.target.value
-              ) !== -1
-                ? e.target.value
-                : ""
-            );
+            switch (e.target.value as ConsumerType) {
+              case "Commercial":
+                setConsumerType("Commercial");
+                break;
+              case "Domestic":
+                setConsumerType("Domestic");
+                break;
+              case "Industrial":
+                setConsumerType("Industrial");
+                break;
+              default:
+                setConsumerType(null);
+                break;
+            }
           }}
           placeholder="Select option"
           size="lg"
           w="300px"
         >
-          <option value="domestic">Domestic</option>
-          <option value="commercial">Commercial</option>
-          <option value="industrial">Industrial</option>
+          <option value="Domestic">Domestic</option>
+          <option value="Commercial">Commercial</option>
+          <option value="Industrial">Industrial</option>
         </Select>
       </VStack>
 
       {/* If consumer type is not selected, show a message */}
       {/* Else show the slabs relevant to the selected consumer type */}
-      {consumerType === "" ? (
+      {!consumerType ? (
         <Text textAlign="center" my="10vh">
           Select a consumer type to get started.
         </Text>
       ) : (
         <>
-          {loading ? (
+          {rates.isLoading ? (
             <>
               {/* Loading Spinner */}
               <Flex align="center" justify="center" p="4" my="12">
@@ -114,7 +162,8 @@ function page({
             <>
               {/* Fixed Charges Display */}
               <Box my="8">
-                {consumerType === "commercial" ? (
+                {consumerType === "Commercial" &&
+                rateCard?.type == "Commercial" ? (
                   <TableContainer
                     my="8"
                     border="1px"
@@ -137,7 +186,7 @@ function page({
                       </Thead>
                       <Tbody>
                         {rateCard?.fixedChargeRate.map((slabRate) => (
-                          <Tr>
+                          <Tr key={slabRate.range}>
                             <Td>{slabRate.range}</Td>
                             <Td isNumeric>
                               <Input
@@ -152,16 +201,40 @@ function page({
                     </Table>
                   </TableContainer>
                 ) : (
-                  <HStack spacing="4" mb="4">
-                    <Text minW="15ch" fontWeight="semibold">
-                      Fixed Charges (Rate per unit):
-                    </Text>
-                    <Input
-                      value={(rateCard?.fixedChargeRate || "").toString()}
-                      maxW="40ch"
-                      size="sm"
-                    />
-                  </HStack>
+                  <Flex alignItems={"center"}>
+                    <HStack spacing="4" w={"2xl"}>
+                      <Text minW="15ch" fontWeight="semibold">
+                        Fixed Charges (Rate per unit):
+                      </Text>
+                      {rateCard?.type == "Commercial" ? (
+                        <></>
+                      ) : (
+                        <Input
+                          key={rateCard?.id}
+                          defaultValue={(
+                            rateCard?.fixedChargeRate || ""
+                          ).toString()}
+                          maxW="10ch"
+                          size="sm"
+                        />
+                      )}
+                    </HStack>
+                    <Spacer />
+                    <HStack spacing={"2"}>
+                      <Button
+                        colorScheme="orange"
+                        variant="solid"
+                        onClick={() => {
+                          handleAddNewRate();
+                        }}
+                      >
+                        Add new
+                      </Button>
+                      <Button colorScheme="orange" variant="outline">
+                        Save
+                      </Button>
+                    </HStack>
+                  </Flex>
                 )}
               </Box>
 
@@ -191,9 +264,10 @@ function page({
                         <Td>{slabRate.range}</Td>
                         <Td isNumeric>
                           <Input
+                            key={slabRate.range}
                             maxW="20ch"
                             textAlign="right"
-                            value={slabRate.pricePerUnit}
+                            defaultValue={slabRate.pricePerUnit}
                           />
                         </Td>
                       </Tr>
