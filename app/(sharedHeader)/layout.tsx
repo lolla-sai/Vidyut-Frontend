@@ -10,10 +10,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import axios from "axios";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
   return (
     <SidebarWithHeader>
       <div>
@@ -32,11 +35,25 @@ const layout = ({ children }: { children: React.ReactNode }) => {
               <VStack alignItems="flex-start" spacing="1px" ml="2">
                 <Text>Admin</Text>
                 <Button
-                  href="/auth/login"
+                  href="#"
                   as={NextLink}
                   variant="outline"
                   textColor="red.400"
                   size="sm"
+                  onClick={() => {
+                    axios
+                      .post(
+                        "http://localhost:8080/api/auth/logout",
+                        {},
+                        { withCredentials: true }
+                      )
+                      .then(({ data }) => {
+                        console.log(data);
+                        if (data.success) {
+                          router.push("/auth/login");
+                        }
+                      });
+                  }}
                 >
                   Sign Out
                 </Button>

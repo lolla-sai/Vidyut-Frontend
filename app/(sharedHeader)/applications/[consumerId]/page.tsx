@@ -12,6 +12,7 @@ import {
   Spinner,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import NextLink from "next/link";
@@ -20,17 +21,170 @@ import { AiFillCheckCircle } from "react-icons/ai";
 import { MdDangerous } from "react-icons/md";
 import { applications } from "@/data/dummy";
 import { FiSave } from "react-icons/fi";
+import { useQuery } from "react-query";
+import { getConsumerApplication } from "@/services/admin.service";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 function ApplicationDetails({ params }: { params: { consumerId: string } }) {
   const [consumerDetail, setConsumerDetail] = useState<User | null>(null);
+  const consumer = useQuery(
+    ["application", { consumerId: params.consumerId }],
+    getConsumerApplication
+  );
+  const toast = useToast();
+  const router = useRouter();
 
   useEffect(() => {
-    let applicationDetail = applications.filter(
-      (val) => val.consumerId === parseInt(params.consumerId)
-    )[0];
+    setConsumerDetail(consumer.data);
+  }, [consumer]);
 
-    setTimeout(() => setConsumerDetail(applicationDetail), 2000);
-  }, []);
+  useEffect(() => {
+    console.log(consumerDetail);
+  }, [consumerDetail]);
+
+  const handleApplicationAccept = async () => {
+    if (
+      consumerDetail?.sanctionedLoad !== 0 ||
+      consumerDetail?.subsidyRate !== 0
+    ) {
+      axios
+        .post(
+          "http://localhost:8080/api/admin/approveConsumer",
+          {
+            consumerId: params.consumerId,
+            sanctionedLoad: consumerDetail?.sanctionedLoad,
+            subsidy: consumerDetail?.subsidyRate,
+          },
+          { withCredentials: true }
+        )
+        .then(({ data }) => {
+          console.log(data);
+          if (data.success) {
+            toast({
+              title: data.message,
+              status: "success",
+              isClosable: true,
+            });
+          }
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          if (response.status == 400) {
+            toast({
+              title: `Session Expired`,
+              status: "error",
+              isClosable: true,
+            });
+            router.push("/auth/login");
+          } else {
+            toast({
+              title: response.message,
+              status: "error",
+              isClosable: true,
+            });
+          }
+        });
+    } else {
+      toast({
+        title: "Sanctioned Load or Subsidy cannot be 0",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleApplicationReject = () => {
+    if (
+      consumerDetail?.rejectionReason != null &&
+      consumerDetail?.rejectionReason.trim().length != 0
+    ) {
+      axios
+        .post(
+          "http://localhost:8080/api/admin/rejectConsumer",
+          {
+            consumerId: params.consumerId,
+            rejectionReason: consumerDetail.rejectionReason,
+          },
+          { withCredentials: true }
+        )
+        .then(({ data }) => {
+          console.log(data);
+          if (data.success) {
+            toast({
+              title: data.message,
+              status: "success",
+              isClosable: true,
+            });
+          }
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          if (response.status == 400) {
+            toast({
+              title: `Session Expired`,
+              status: "error",
+              isClosable: true,
+            });
+            router.push("/auth/login");
+          } else {
+            toast({
+              title: response.message,
+              status: "error",
+              isClosable: true,
+            });
+          }
+        });
+    } else {
+      toast({
+        title: "Rejection reason cannot be empty",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const updateConsumerDetails = () => {
+    axios
+      .put(
+        "http://localhost:8080/api/admin/updateConsumers",
+        {
+          consumerId: params.consumerId,
+          address: consumerDetail?.address,
+          phoneNumber: Number(consumerDetail?.phoneNumber),
+          subsidyRate: Number(consumerDetail?.subsidyRate),
+          sanctionedLoad: Number(consumerDetail?.sanctionedLoad),
+        },
+        { withCredentials: true }
+      )
+      .then(({ data }) => {
+        console.log(data);
+        if (data.success) {
+          toast({
+            title: data.message,
+            status: "success",
+            isClosable: true,
+          });
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.status == 400) {
+          toast({
+            title: `Session Expired`,
+            status: "error",
+            isClosable: true,
+          });
+          router.push("/auth/login");
+        } else {
+          toast({
+            title: response.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      });
+  };
 
   if (!consumerDetail) {
     return (
@@ -74,8 +228,18 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
         <Box mb="8">
           {consumerDetail.status === "Pending" ? (
             <ButtonGroup variant="outline" spacing="6">
-              <Button colorScheme="green">Accept</Button>
-              <Button colorScheme="red">Reject</Button>
+              <Button
+                colorScheme="green"
+                onClick={() => handleApplicationAccept()}
+              >
+                Accept
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => handleApplicationReject()}
+              >
+                Reject
+              </Button>
             </ButtonGroup>
           ) : consumerDetail.status === "Rejected" ? (
             <HStack
@@ -116,11 +280,12 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 Consumer ID:{" "}
               </Text>
               <Input
-                value={consumerDetail.consumerId}
+                defaultValue={params.consumerId}
                 maxW="40ch"
                 fontWeight="semibold"
                 placeholder="Here is a sample placeholder"
                 size="sm"
+                readOnly
               />
             </HStack>
 
@@ -130,7 +295,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 Meter Number:
               </Text>
               <Input
-                value={consumerDetail.meterNumber}
+                defaultValue={consumerDetail.meterNumber}
                 maxW="40ch"
                 fontWeight="semibold"
                 size="sm"
@@ -143,10 +308,18 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 Phone Number:{" "}
               </Text>
               <Input
-                value={consumerDetail.phoneNumber}
+                defaultValue={consumerDetail.phoneNumber}
                 type="number"
                 maxW="40ch"
                 size="sm"
+                onChange={(e) => {
+                  setConsumerDetail((prev) => {
+                    if (prev) {
+                      prev.phoneNumber = Number(e.target.value);
+                      return prev;
+                    }
+                  });
+                }}
               />
             </HStack>
 
@@ -155,7 +328,19 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
               <Text minW="15ch" fontWeight="semibold">
                 Address:
               </Text>
-              <Input value={consumerDetail.address} maxW="40ch" size="sm" />
+              <Input
+                defaultValue={consumerDetail.address}
+                maxW="40ch"
+                size="sm"
+                onChange={(e) => {
+                  setConsumerDetail((prev) => {
+                    if (prev) {
+                      prev.address = e.target.value;
+                      return prev;
+                    }
+                  });
+                }}
+              />
             </HStack>
 
             {/* Phase */}
@@ -163,12 +348,14 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
               <Text minW="15ch" fontWeight="semibold">
                 Phase:
               </Text>
-              <Select variant="outline" maxW="30ch" size="sm">
-                <option value="single" selected>
-                  Single
-                </option>
-                <option value="three">Multi-Phase(3)</option>
-              </Select>
+              <Input
+                defaultValue={
+                  consumerDetail.phase == 1 ? "Single phase" : "Three phase"
+                }
+                maxW="40ch"
+                size="sm"
+                readOnly
+              />
             </HStack>
 
             {/* Sanctioned Load */}
@@ -177,9 +364,18 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 Sanctioned Load:{" "}
               </Text>
               <Input
-                value={consumerDetail.sactionedLoad}
+                defaultValue={consumerDetail.sanctionedLoad}
                 maxW="40ch"
                 size="sm"
+                type="number"
+                onChange={(e) => {
+                  setConsumerDetail((prev) => {
+                    if (prev) {
+                      prev.sanctionedLoad = Number(e.target.value);
+                      return prev;
+                    }
+                  });
+                }}
               />
             </HStack>
 
@@ -190,13 +386,14 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
               variant="solid"
               size="lg"
               my="4"
+              onClick={() => updateConsumerDetails()}
             >
               Save
             </Button>
           </Box>
 
           <Box>
-            {consumerDetail.subsidyRate !== 0 && (
+            {consumerDetail.supportingDocs.length !== 0 && (
               <>
                 <Text mb="4" maxW="prose" fontFamily="custom">
                   This application is subsidized in nature. You can view the
@@ -208,15 +405,25 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                     Subsidy:{" "}
                   </Text>
                   <Input
-                    value={consumerDetail.subsidyRate}
+                    defaultValue={consumerDetail.subsidyRate}
                     maxW="40ch"
                     size="sm"
+                    type="number"
+                    onChange={(e) => {
+                      setConsumerDetail((prev) => {
+                        if (prev) {
+                          prev.subsidyRate = Number(e.target.value);
+                          return prev;
+                        }
+                      });
+                    }}
                   />
                 </HStack>
                 {/* Supporting Docs */}
                 <Box mb="8">
                   {consumerDetail.supportingDocs.map((doc) => (
                     <Box
+                      key={doc.fileName}
                       bg="gray.50"
                       boxShadow="lg"
                       border="1px"
@@ -252,9 +459,17 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                     :
                   </Text>
                   <Textarea
-                    value={consumerDetail.rejectionReason || ""}
+                    defaultValue={consumerDetail.rejectionReason || ""}
                     maxW="500px"
                     resize="none"
+                    onChange={(e) => {
+                      setConsumerDetail((prev) => {
+                        if (prev) {
+                          prev.rejectionReason = e.target.value;
+                          return prev;
+                        }
+                      });
+                    }}
                   ></Textarea>
                 </Box>
               </>
