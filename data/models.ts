@@ -1,4 +1,11 @@
-import { Breakage, CommercialFCSlab, ConsumerType, ECSlab, IndustrialSlab, SubsidyDoc } from "./custom";
+import {
+  Breakage,
+  CommercialFCSlab,
+  ConsumerType,
+  ECSlab,
+  IndustrialSlab,
+  SubsidyDoc,
+} from "./custom";
 
 export type Admin = {
   userName: string;
@@ -75,4 +82,3 @@ export type Complaint = {
   billDocId: string;
   consumerDocId: string;
 };
-
