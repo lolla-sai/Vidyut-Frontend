@@ -1,6 +1,6 @@
 "use client";
 
-import { ConsumerType } from "@/data/custom";
+import { CommercialFCSlab, ConsumerType } from "@/data/custom";
 import { commercialSlab, domesticSlabs, industrialSlabs } from "@/data/dummy";
 import { CommercialRate, DomesticRate, IndustrialRate } from "@/data/models";
 import {
@@ -28,6 +28,11 @@ import React, { useEffect, useState } from "react";
 import { UseQueryResult, useQuery } from "react-query";
 import { getCurrentRates } from "@/services/admin.service";
 import axios from "axios";
+import {
+  CreateCommercialRate,
+  CreateDomesticRate,
+  CreateIndustrialRate,
+} from "@/types/requestBody.types";
 
 function page({
   searchParams: { type },
@@ -36,7 +41,7 @@ function page({
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [consumerType, setConsumerType] = useState<ConsumerType | null>(
-    type || null
+    type || "Domestic"
   );
   const [rateCard, setRateCard] = useState<
     DomesticRate | IndustrialRate | CommercialRate | null
@@ -45,7 +50,10 @@ function page({
     domesticRate: DomesticRate;
     commercialRate: CommercialRate;
     industrialRate: IndustrialRate;
-  }> = useQuery("rates", getCurrentRates);
+  }> = useQuery({ queryKey: "rates", queryFn: getCurrentRates });
+  const [fixedChargeRate, setFixedChargeRate] = useState<
+    number | Array<CommercialFCSlab> | undefined
+  >(rateCard?.fixedChargeRate);
 
   useEffect(() => {
     console.log("Value Changed");
@@ -68,14 +76,33 @@ function page({
   }, [consumerType, rates.data]);
 
   const handleAddNewRate = async () => {
-    const res = (await axios.post("http://localhost:8080/api/admin/createRate", {
+    var res = null;
 
-    }, { withCredentials: true })).data;
-  }
+    switch (consumerType) {
+      case "Domestic":
+        res = (
+          await axios.post(
+            "http://localhost:8080/api/billing/createRate",
+            {} as CreateDomesticRate,
+            { withCredentials: true }
+          )
+        ).data;
+
+        break;
+      case "Commercial":
+        break;
+      case "Industrial":
+        break;
+    }
+  };
 
   useEffect(() => {
     console.log(rateCard);
   }, [rateCard]);
+
+  useEffect(() => {
+    console.log(rates);
+  }, [rates]);
 
   return (
     <Box>
@@ -121,7 +148,7 @@ function page({
         </Text>
       ) : (
         <>
-          {loading ? (
+          {rates.isLoading ? (
             <>
               {/* Loading Spinner */}
               <Flex align="center" justify="center" p="4" my="12">
@@ -174,8 +201,8 @@ function page({
                     </Table>
                   </TableContainer>
                 ) : (
-                  <Flex>
-                    <HStack spacing="4" mb="4" w={"2xl"}>
+                  <Flex alignItems={"center"}>
+                    <HStack spacing="4" w={"2xl"}>
                       <Text minW="15ch" fontWeight="semibold">
                         Fixed Charges (Rate per unit):
                       </Text>
@@ -187,7 +214,7 @@ function page({
                           defaultValue={(
                             rateCard?.fixedChargeRate || ""
                           ).toString()}
-                          maxW="40ch"
+                          maxW="10ch"
                           size="sm"
                         />
                       )}
