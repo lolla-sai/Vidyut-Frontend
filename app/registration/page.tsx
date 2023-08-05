@@ -14,131 +14,27 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
+  useToast,
 } from "@chakra-ui/react";
 
 import React from "react";
-import { Select } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { storage } from "@/config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useRef } from "react";
 import axios from "axios";
 import * as Yup from "yup";
-
-function CustomInput({
-  label,
-  fieldName,
-  formik,
-  required = false,
-  ...inputProps
-}: {
-  label: string;
-  fieldName: string;
-  formik: any;
-  required: boolean;
-}) {
-  return (
-    <FormControl
-      mb="4"
-      isInvalid={formik.touched[fieldName] && formik.errors[fieldName]}
-    >
-      <HStack spacing="4">
-        <FormLabel minW="15ch" mb="0" htmlFor={fieldName}>
-          {label}
-          {required ? (
-            <Text as="span" ml="1" color="red.500">
-              *
-            </Text>
-          ) : null}
-        </FormLabel>
-        <Input
-          maxW="40ch"
-          size="sm"
-          id={fieldName}
-          name={fieldName}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          value={formik.values[fieldName] || ""}
-          {...inputProps}
-        />
-      </HStack>
-      <FormErrorMessage>{formik.errors[fieldName]}</FormErrorMessage>
-    </FormControl>
-  );
-}
-
-function CustomCheckbox({
-  label,
-  fieldName,
-  formik,
-}: {
-  label: string;
-  fieldName: string;
-  formik: any;
-}) {
-  return (
-    <>
-      <Checkbox
-        checked={formik.values[fieldName]}
-        id={fieldName}
-        name={fieldName}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        mb="4"
-      >
-        {label}
-      </Checkbox>
-    </>
-  );
-}
-
-function CustomSelect({
-  label,
-  fieldName,
-  children,
-  formik,
-  required = false,
-  ...rest
-}: {
-  label: string;
-  fieldName: string;
-  children: React.ReactNode;
-  formik: any;
-  required: boolean;
-}) {
-  return (
-    <FormControl
-      mb="4"
-      isInvalid={formik.touched[fieldName] && formik.errors[fieldName]}
-    >
-      <HStack spacing="4" mb="4">
-        <FormLabel minW="15ch" mb="0" htmlFor={fieldName}>
-          {label}
-          {required ? (
-            <Text as="span" ml="1" color="red.500">
-              *
-            </Text>
-          ) : null}
-        </FormLabel>
-        <Select
-          variant="outline"
-          maxW="35ch"
-          size="sm"
-          id={fieldName}
-          name={fieldName}
-          onChange={formik.handleChange}
-          value={formik.values[fieldName]}
-          {...rest}
-        >
-          {children}
-        </Select>
-      </HStack>
-      <FormErrorMessage>{formik.errors[fieldName]}</FormErrorMessage>
-    </FormControl>
-  );
-}
+import CustomInput from "@/components/CustomInput";
+import CustomSelect from "@/components/CustomSelect";
+import CustomCheckbox from "@/components/CustomCheckbox";
+import { useMutation, useQuery } from "react-query";
+import { useRouter } from "next/navigation";
 
 export default function Registration() {
+  const toast = useToast();
+  const formikRef = useRef(null);
+  const router = useRouter();
+
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -179,18 +75,54 @@ export default function Registration() {
         ...values,
         supportingDocs: urls,
       };
-      console.log(requestBody);
 
-      let response = await axios.post(
-        "http://localhost:8080/api/consumer/createConsumer",
-        requestBody,
-        { withCredentials: true }
-      );
-      console.log(response);
+      mutation.mutate(requestBody);
     },
   });
 
   const inputRef = useRef(null);
+
+  const mutation = useMutation({
+    mutationFn: (requestBody) =>
+      axios
+        .post(
+          "http://localhost:8080/api/consumer/createConsumer",
+          requestBody,
+          { withCredentials: true }
+        )
+        .then((res) => res.data),
+    onMutate: () => formikRef?.current?.setSubmitting(true),
+    onSettled: () => formikRef?.current?.setSubmitting(false),
+    onSuccess: () => {
+      toast({
+        title: "Application Submitted",
+        description: "We will inform you when it is accepted!",
+        status: "success",
+        duration: 3000,
+        position: "top",
+      });
+      setTimeout(() => router.push("/"), 3000);
+    },
+    onError(error, variables, context) {
+      if (error.response?.data) {
+        toast({
+          title: error.response.data.message,
+          // description: "View your bills ",
+          status: "error",
+          duration: 3000,
+          position: "top",
+        });
+      } else {
+        toast({
+          title: "Some Error Occured",
+          description: "Please try again after some time!",
+          status: "error",
+          duration: 3000,
+          position: "top",
+        });
+      }
+    },
+  });
 
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
@@ -325,6 +257,8 @@ export default function Registration() {
               size="lg"
               my="8"
               type="submit"
+              isLoading={formik.isSubmitting}
+              loadingText="Submitting Application..."
             >
               Register
             </Button>
@@ -345,6 +279,5 @@ export default function Registration() {
 }
 
 // admin is prefillled, mention
-// make theme orange
 // whitespaces remove - slabs me
 // put scrollbar only for the table
