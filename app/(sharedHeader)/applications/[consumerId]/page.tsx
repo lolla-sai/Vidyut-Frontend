@@ -30,7 +30,27 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
   const [consumerDetail, setConsumerDetail] = useState<User | null>(null);
   const consumer = useQuery(
     ["application", { consumerId: params.consumerId }],
-    getConsumerApplication
+    getConsumerApplication,
+    {
+      onError({ response }) {
+        console.log(response)
+        if (response.status === 400) {
+          toast({
+            title: "Your session is expired",
+            status: "error",
+            isClosable: true,
+          });
+
+          router.push("/auth/login");
+        } else {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      },
+    }
   );
   const toast = useToast();
   const router = useRouter();

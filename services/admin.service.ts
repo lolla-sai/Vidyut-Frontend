@@ -30,21 +30,15 @@ export const getConsumerApplication = async ({
 }: {
   queryKey: any;
 }) => {
-  try {
-    const [_, consumerId] = queryKey;
-    const applications = (
-      await axios.get(
-        `http://localhost:8080/api/admin/consumerApplicationDetails/${consumerId.consumerId}`,
-        {
-          withCredentials: true,
-        }
-      )
-    ).data;
+  const [_, consumerId] = queryKey;
+  const applications = (
+    await axios.get(
+      `http://localhost:8080/api/admin/consumerApplicationDetails/${consumerId.consumerId}`,
+      {
+        withCredentials: true,
+      }
+    )
+  ).data;
 
-    console.log(applications);
-    return applications.consumerApplication;
-  } catch (err: any) {
-    console.log(err);
-    throw new Error(err.message);
-  }
+  return applications.consumerApplication;
 };
