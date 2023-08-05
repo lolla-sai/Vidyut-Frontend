@@ -1,5 +1,5 @@
-import "express-session";
-export type ConsumerType = "domestic" | "commercial" | "industrial";
+export type ConsumerType = "Domestic" | "Commercial" | "Industrial";
+type SubsidyDoc = { fileName: string; url: string };
 
 export type Breakage = {
   quantity: number;
@@ -17,23 +17,7 @@ export type IndustrialSlab = {
   pricePerUnit: number;
 };
 
-export type IndustrialFCSlab = {
+export type CommercialFCSlab = {
   range: "0-20" | "20-90";
   pricePerUnit: number;
 };
-
-type UserSession = {
-  userDocId: string | null;
-  loggedIn: boolean;
-};
-
-type SubsidyDoc = {
-  fileName: string;
-  url: string;
-};
-
-declare module "express-session" {
-  interface SessionData {
-    userData: UserSession;
-  }
-}

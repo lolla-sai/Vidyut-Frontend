@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, ButtonGroup, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, HStack, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -11,10 +11,14 @@ export default function Home() {
     <>
       <Text>Welcome to Home Page</Text>
 
-      <Box>
-        <NextLink href="/applications">Go To Admin Page</NextLink>
-        <NextLink href="/applications">Registration</NextLink>
-      </Box>
+      <HStack spacing="2" p="4">
+        <Button as={NextLink} href="/applications">
+          Go To Admin Page
+        </Button>
+        <Button as={NextLink} href="/registration">
+          Registration
+        </Button>
+      </HStack>
     </>
   );
 }

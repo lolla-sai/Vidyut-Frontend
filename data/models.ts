@@ -2,46 +2,51 @@ import {
   Breakage,
   ConsumerType,
   ECSlab,
-  IndustrialFCSlab,
   IndustrialSlab,
   SubsidyDoc,
 } from "./custom";
-// import { Timestamp } from "@google-cloud/firestore";
 
 export type Admin = {
   userName: string;
   password: string;
 };
 
+export type UserApplicationStatus = "Approved" | "Pending" | "Rejected";
+
 export type User = {
-  consumerId: number;
   phoneNumber: number;
   fullName: string;
   address: string;
+  email: string;
   meterNumber: number;
-  sactionedLoad: number;
+  sanctionedLoad: number;
   consumerType: ConsumerType;
   subsidyRate: number;
-  status: "Approved" | "Rejected" | "Pending";
-  rejectionReason: string | null;
   phase: 1 | 3;
+  approved: boolean;
   supportingDocs: Array<SubsidyDoc>;
+  status: UserApplicationStatus;
+  rejectionReason: string | null;
 };
 
-// export type Billing = {
-//   consumerDocId: string;
-//   meterNumber: number;
-//   currentDate: Timestamp;
-//   paymentDate: Timestamp;
-//   previousReading: number;
-//   consumption: number;
-//   breakage: Array<Breakage>;
-//   fixedCharge: number;
-//   meterRent: number;
-//   totalCharge: number;
-//   paid: boolean;
-//   rateDocId: string;
-// };
+export type Billing = {
+  consumerDocId: string;
+  consumerType: ConsumerType;
+  sanctionedLoad: number;
+  meterNumber: number;
+  currentDate: string;
+  currentReading: number;
+  paymentDate: string;
+  previousReading: number;
+  consumption: number;
+  breakage: Array<Breakage>;
+  fixedCharge: { amount: number; calculation: string };
+  meterRent: number;
+  totalCharge: number;
+  paid: boolean;
+  rateDocId: string;
+  latest: boolean;
+};
 
 export type CommercialFCSlab = {
   range: "0-20" | "20-90";
@@ -52,8 +57,8 @@ export type DomesticRate = {
   slabs: Array<ECSlab>;
   fixedChargeRate: number;
   latest: boolean;
-  validFrom: Date;
-  validTill: Date;
+  validFrom: string;
+  validTill: string;
   type: "Domestic";
 };
 
@@ -61,8 +66,8 @@ export type IndustrialRate = {
   slabs: Array<IndustrialSlab>;
   fixedChargeRate: number;
   latest: boolean;
-  validFrom: Date;
-  validTill: Date;
+  validFrom: string;
+  validTill: string;
   type: "Industrial";
 };
 
@@ -70,13 +75,14 @@ export type CommercialRate = {
   slabs: Array<ECSlab>;
   fixedChargeRate: Array<CommercialFCSlab>;
   latest: boolean;
-  validFrom: Date;
-  validTill: Date;
+  validFrom: string;
+  validTill: string;
   type: "Commercial";
 };
 
 export type Complaint = {
   description: string;
-  status: string;
+  status: "Resolved" | "Rejected" | "Pending";
   billDocId: string;
+  consumerDocId: string;
 };
