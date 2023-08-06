@@ -19,22 +19,22 @@ import NextLink from "next/link";
 import { HiDocumentDuplicate } from "react-icons/hi";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { MdDangerous } from "react-icons/md";
-import { applications } from "@/data/dummy";
 import { FiSave } from "react-icons/fi";
 import { useQuery } from "react-query";
 import { getConsumerApplication } from "@/services/admin.service";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 
 function ApplicationDetails({ params }: { params: { consumerId: string } }) {
   const [consumerDetail, setConsumerDetail] = useState<User | null>(null);
+  const toast = useToast();
+  const router = useRouter();
   const consumer = useQuery(
     ["application", { consumerId: params.consumerId }],
     getConsumerApplication,
     {
-      onError({ response }) {
-        console.log(response)
-        if (response.status === 400) {
+      onError({ response, code }: { code: string; response: AxiosResponse }) {
+        if (response && response.status === 400) {
           toast({
             title: "Your session is expired",
             status: "error",
@@ -42,6 +42,12 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
           });
 
           router.push("/auth/login");
+        } else if (code == "ERR_NETWORK") {
+          toast({
+            title: "Network error, cannot connect",
+            status: "error",
+            isClosable: true,
+          });
         } else {
           toast({
             title: response.data.message,
@@ -52,8 +58,6 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
       },
     }
   );
-  const toast = useToast();
-  const router = useRouter();
 
   useEffect(() => {
     setConsumerDetail(consumer.data);
@@ -319,6 +323,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 maxW="40ch"
                 fontWeight="semibold"
                 size="sm"
+                readOnly
               />
             </HStack>
 
@@ -336,8 +341,8 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                   setConsumerDetail((prev) => {
                     if (prev) {
                       prev.phoneNumber = Number(e.target.value);
-                      return prev;
                     }
+                    return prev;
                   });
                 }}
               />
@@ -356,8 +361,8 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                   setConsumerDetail((prev) => {
                     if (prev) {
                       prev.address = e.target.value;
-                      return prev;
                     }
+                    return prev;
                   });
                 }}
               />
@@ -392,8 +397,8 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                   setConsumerDetail((prev) => {
                     if (prev) {
                       prev.sanctionedLoad = Number(e.target.value);
-                      return prev;
                     }
+                    return prev;
                   });
                 }}
               />
@@ -433,8 +438,8 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                       setConsumerDetail((prev) => {
                         if (prev) {
                           prev.subsidyRate = Number(e.target.value);
-                          return prev;
                         }
+                        return prev;
                       });
                     }}
                   />
@@ -486,8 +491,8 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                       setConsumerDetail((prev) => {
                         if (prev) {
                           prev.rejectionReason = e.target.value;
-                          return prev;
                         }
+                        return prev;
                       });
                     }}
                   ></Textarea>

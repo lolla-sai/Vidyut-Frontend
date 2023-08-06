@@ -14,6 +14,7 @@ import {
   Tbody,
   Td,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 
 import { AiFillShop, AiFillHome } from "react-icons/ai";
@@ -23,6 +24,7 @@ import { useQuery } from "react-query";
 import { getCurrentApplicationList } from "@/services/admin.service";
 import { useEffect } from "react";
 import { User } from "@/data/models";
+import { AxiosError, AxiosResponse } from "axios";
 
 function getIconFromConsumerType(consumerType: ConsumerType): React.ReactNode {
   if (consumerType === "Domestic") {
@@ -40,8 +42,15 @@ export default function Home() {
   const applications = useQuery({
     queryKey: "applications",
     queryFn: getCurrentApplicationList,
-    onError({ response }) {
-      if (response.status === 400) {
+    onError({
+      response,
+      code,
+    }: {
+      code: string;
+      status: number;
+      response: AxiosResponse;
+    }) {
+      if (response && response.status === 400) {
         toast({
           title: "Your session is expired",
           status: "error",
@@ -49,6 +58,12 @@ export default function Home() {
         });
 
         router.push("/auth/login");
+      } else if (code == "ERR_NETWORK") {
+        toast({
+          title: "Network error, cannot connect",
+          status: "error",
+          isClosable: true,
+        });
       } else {
         toast({
           title: response.data.message,
@@ -99,7 +114,7 @@ export default function Home() {
       {/* Applications */}
       <TableContainer rounded="xl" border="1px" borderColor="orange.100">
         <Box overflowY="auto" maxHeight="400px">
-          <Table variant="simple">
+          <Table variant="simple" minH={"280px"}>
             <Thead bg="orange.400" position="sticky" top={0}>
               <Tr>
                 <Th color="gray.100" isNumeric>
@@ -121,7 +136,15 @@ export default function Home() {
             <Tbody>
               {applications.isLoading ? (
                 <Tr>
-                  <Td>Loading...</Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td>
+                    <HStack>
+                      <Spinner size={"lg"} />
+                      <Text>Fetching Applications</Text>
+                    </HStack>
+                  </Td>
                 </Tr>
               ) : (
                 applications.data?.map(

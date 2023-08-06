@@ -33,7 +33,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { UseQueryResult, useQuery } from "react-query";
 import { getCurrentRates } from "@/services/admin.service";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   CreateOrUpdateCommercialRate,
   CreateOrUpdateDomesticRate,
@@ -57,7 +57,34 @@ function page({
     domesticRate: DomesticRate;
     commercialRate: CommercialRate;
     industrialRate: IndustrialRate;
-  }> = useQuery({ queryKey: "rates", queryFn: getCurrentRates });
+  }> = useQuery({
+    queryKey: "rates",
+    queryFn: getCurrentRates,
+    onError({ response, code }: { code: string; response: AxiosResponse }) {
+      console.log(response);
+      if (response && response.status === 400) {
+        toast({
+          title: "Your session is expired",
+          status: "error",
+          isClosable: true,
+        });
+
+        router.push("/auth/login");
+      } else if (code == "ERR_NETWORK") {
+        toast({
+          title: "Network error, cannot connect",
+          status: "error",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: response.data.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    },
+  });
   const [fixedChargeRate, setFixedChargeRate] = useState<
     number | Array<CommercialFCSlab> | undefined
   >(rateCard?.fixedChargeRate);
