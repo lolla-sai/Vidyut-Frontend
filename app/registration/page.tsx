@@ -6,17 +6,11 @@ import {
   Box,
   Flex,
   Stack,
-  Input,
   HStack,
   Text,
-  Checkbox,
   Image,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
   useToast,
 } from "@chakra-ui/react";
-
 import React from "react";
 import { useFormik } from "formik";
 import { storage } from "@/config/firebase.config";
@@ -29,6 +23,8 @@ import CustomSelect from "@/components/CustomSelect";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import { useMutation, useQuery } from "react-query";
 import { useRouter } from "next/navigation";
+import { registerConsumer } from "@/services/admin.service";
+import NextLink from "next/link";
 
 export default function Registration() {
   const toast = useToast();
@@ -83,14 +79,7 @@ export default function Registration() {
   const inputRef = useRef(null);
 
   const mutation = useMutation({
-    mutationFn: (requestBody) =>
-      axios
-        .post(
-          "http://localhost:8080/api/consumer/createConsumer",
-          requestBody,
-          { withCredentials: true }
-        )
-        .then((res) => res.data),
+    mutationFn: registerConsumer,
     onMutate: () => formikRef?.current?.setSubmitting(true),
     onSettled: () => formikRef?.current?.setSubmitting(false),
     onSuccess: () => {
@@ -132,15 +121,17 @@ export default function Registration() {
           <Heading fontWeight="extrabold" size="xl" mb="0">
             Registration
           </Heading>
-          <Image
-            alt={"Logo"}
-            src={"/assets/logo.jpg"}
-            style={{
-              width: 150,
-              height: 60,
-              objectFit: "contain",
-            }}
-          />
+          <NextLink href="/">
+            <Image
+              alt={"Logo"}
+              src={"/assets/logo.jpg"}
+              style={{
+                width: 150,
+                height: 60,
+                objectFit: "contain",
+              }}
+            />
+          </NextLink>
         </HStack>
 
         <form

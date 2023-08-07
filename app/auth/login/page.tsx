@@ -27,6 +27,7 @@ export default function SplitScreen() {
   }, [uname, password]);
 
   const signIn = async () => {
+    router.push("/applications");
     if (uname && password) {
       const res = await axios.post(
         "http://localhost:8080/api/auth/login",

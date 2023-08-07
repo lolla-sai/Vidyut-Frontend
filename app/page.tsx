@@ -12,7 +12,7 @@ export default function Home() {
       <Text>Welcome to Home Page</Text>
 
       <HStack spacing="2" p="4">
-        <Button as={NextLink} href="/applications">
+        <Button as={NextLink} href="/auth/login">
           Go To Admin Page
         </Button>
         <Button as={NextLink} href="/registration">
