@@ -53,7 +53,7 @@ interface SidebarProps extends BoxProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: "Applications", icon: FiHome, href: "/applications" },
-  { name: "Complaints", icon: FiTrendingUp, href: "/complaints" },
+  { name: "Complaints", icon: FiTrendingUp, href: "/complaints-admin" },
   { name: "Bills", icon: FiCompass, href: "/bills" },
   { name: "Slabs And Rates", icon: FiStar, href: "/rates" },
   { name: "Settings", icon: FiSettings, href: "/settings" },
