@@ -1,5 +1,11 @@
 import { IndustrialSlab } from "./custom";
-import { CommercialRate, DomesticRate, IndustrialRate, User } from "./models";
+import {
+  Billing,
+  CommercialRate,
+  DomesticRate,
+  IndustrialRate,
+  User,
+} from "./models";
 
 export const domesticSlabs: DomesticRate = {
   slabs: [
@@ -139,5 +145,67 @@ export const applications: User[] = [
       { fileName: "aadhar.pdf", url: "https://docs.google.com/12333rf3" },
       { fileName: "pan.pdf", url: "https://docs.google.com/f12333rf23" },
     ],
+  },
+];
+
+export const bills: (Billing & {
+  meterRent: number;
+  subsidyDiscount: number;
+  totalEC: number;
+  dueDate: string;
+  billId: number;
+  fullName: string;
+})[] = [
+  {
+    paid: false,
+    billId: 13333939404,
+    latest: true,
+    consumerDocId: "cbGTD4GhrctI1DiuadK6",
+    sanctionedLoad: 3.9,
+    consumption: 1300,
+    currentDate: "08-05-2023",
+    currentReading: 1300,
+    meterNumber: 2,
+    paymentDate: "08-20-2023",
+    rateDocId: "MC03ERK3VSkdcLj3YxEs",
+    fixedCharge: {
+      amount: 176,
+      calculation: "45 * 3.9",
+    },
+    meterRent: 15,
+    previousReading: 0,
+    totalCharge: 5922,
+    breakage: [
+      {
+        amount: 355,
+        quantity: 100,
+        rate: 3.55,
+      },
+      {
+        amount: 435,
+        quantity: 100,
+        rate: 4.35,
+      },
+      {
+        amount: 485,
+        quantity: 100,
+        rate: 4.85,
+      },
+      {
+        amount: 390,
+        quantity: 100,
+        rate: 3.9,
+      },
+      {
+        amount: 4725,
+        quantity: 900,
+        rate: 5.25,
+      },
+    ],
+    consumerType: "Commercial",
+    fullName: "Sai Lolla",
+    totalEC: 6390,
+    dueDate: "8-7-2023",
+    subsidyDiscount: 658,
   },
 ];
