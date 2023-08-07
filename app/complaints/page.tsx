@@ -75,7 +75,7 @@ export default function ComplaintsPage() {
           mb={2}
         />
       </FormControl>
-      <FormControl isRequired>
+      <FormControl>
         <FormLabel>Attach Documents</FormLabel>
         <input type="file" multiple onChange={handleDocumentUpload} />
       </FormControl>
