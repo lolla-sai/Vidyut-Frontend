@@ -469,36 +469,36 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                     </Box>
                   ))}
                 </Box>
-
-                {/* Rejection Reason */}
-                <Box>
-                  <Text minW="15ch" fontWeight="semibold" mb="2">
-                    Rejection Reason{" "}
-                    <span
-                      style={{
-                        color: "red",
-                      }}
-                    >
-                      *
-                    </span>
-                    :
-                  </Text>
-                  <Textarea
-                    defaultValue={consumerDetail.rejectionReason || ""}
-                    maxW="500px"
-                    resize="none"
-                    onChange={(e) => {
-                      setConsumerDetail((prev) => {
-                        if (prev) {
-                          prev.rejectionReason = e.target.value;
-                        }
-                        return prev;
-                      });
-                    }}
-                  ></Textarea>
-                </Box>
               </>
             )}
+
+            {/* Rejection Reason */}
+            <Box>
+              <Text minW="15ch" fontWeight="semibold" mb="2">
+                Rejection Reason{" "}
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  *
+                </span>
+                :
+              </Text>
+              <Textarea
+                defaultValue={consumerDetail.rejectionReason || ""}
+                maxW="500px"
+                resize="none"
+                onChange={(e) => {
+                  setConsumerDetail((prev) => {
+                    if (prev) {
+                      prev.rejectionReason = e.target.value;
+                    }
+                    return prev;
+                  });
+                }}
+              ></Textarea>
+            </Box>
           </Box>
         </SimpleGrid>
       </Box>

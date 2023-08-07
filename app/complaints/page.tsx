@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -13,7 +12,7 @@ import {
   FormLabel,
   VStack,
   Spacer,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
 interface Complaint {
   id: number;
@@ -23,13 +22,18 @@ interface Complaint {
 }
 
 export default function ComplaintsPage() {
-  const [complaintText, setComplaintText] = useState('');
-  const [billId, setBillId] = useState('');
+  const [complaintText, setComplaintText] = useState("");
+  const [billId, setBillId] = useState("");
+  const [consumerId, setConsumerId] = useState("");
   const [attachedDocuments, setAttachedDocuments] = useState<string[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
 
   const handleComplaintSubmit = () => {
-    if (complaintText.trim() === '' || billId.trim() === '' || attachedDocuments.length === 0) {
+    if (
+      complaintText.trim() === "" ||
+      billId.trim() === "" ||
+      attachedDocuments.length === 0
+    ) {
       // You can display an error message here or prevent the submission if fields are empty
       return;
     }
@@ -41,8 +45,8 @@ export default function ComplaintsPage() {
       billId: billId,
     };
     setComplaints([...complaints, newComplaint]);
-    setComplaintText('');
-    setBillId('');
+    setComplaintText("");
+    setBillId("");
     setAttachedDocuments([]);
   };
 
@@ -67,6 +71,15 @@ export default function ComplaintsPage() {
         />
       </FormControl>
       <FormControl isRequired>
+        <FormLabel>Consumer ID</FormLabel>
+        <Input
+          value={consumerId}
+          onChange={(e) => setBillId(e.target.value)}
+          placeholder="Enter consumer ID"
+          mb={2}
+        />
+      </FormControl>
+      <FormControl isRequired>
         <FormLabel>Add Complaint</FormLabel>
         <Input
           value={complaintText}
@@ -75,16 +88,18 @@ export default function ComplaintsPage() {
           mb={2}
         />
       </FormControl>
-      <FormControl>
-        <FormLabel>Attach Documents</FormLabel>
-        <input type="file" multiple onChange={handleDocumentUpload} />
-      </FormControl>
       <Button onClick={handleComplaintSubmit} colorScheme="blue">
         Submit
       </Button>
       <VStack mt={4} align="start" spacing={4}>
         {complaints.map((complaint) => (
-          <Box key={complaint.id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+          <Box
+            key={complaint.id}
+            p={4}
+            border="1px"
+            borderColor="gray.200"
+            borderRadius="md"
+          >
             <Text>{complaint.text}</Text>
             <Text>Bill ID: {complaint.billId}</Text>
             {complaint.documents.length > 0 && (
