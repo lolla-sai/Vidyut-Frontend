@@ -59,19 +59,26 @@ export default function Registration() {
       subsidy: Yup.boolean(),
     }),
     onSubmit: async (values) => {
-      let urls: Array<string> = [];
+      let urls: Array<{ url: string; fileName: string }> = [];
       if (values.consumerType !== "Domestic") {
-        [...values.supportingDocs].forEach(async (doc: Blob) => {
-          const storageRef = ref(storage, "supportingDocs/" + doc?.name);
-          await uploadBytesResumable(storageRef, doc);
-          urls.push(await getDownloadURL(storageRef));
-        });
+        await Promise.all(
+          [...values.supportingDocs].map(async (doc: Blob) => {
+            const storageRef = ref(storage, "supportingDocs/" + doc?.name);
+            await uploadBytesResumable(storageRef, doc);
+            urls.push({
+              url: await getDownloadURL(storageRef),
+              fileName: doc.name,
+            });
+          })
+        );
       }
+
       let requestBody = {
         ...values,
         supportingDocs: urls,
       };
 
+      console.log(requestBody, "Request body");
       mutation.mutate(requestBody);
     },
   });

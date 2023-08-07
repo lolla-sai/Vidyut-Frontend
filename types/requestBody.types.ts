@@ -1,20 +1,20 @@
 import { CommercialFCSlab, ECSlab, IndustrialSlab } from "@/data/custom";
 
-export type CreateDomesticRate = {
+export type CreateOrUpdateDomesticRate = {
   rateType: "Domestic";
   slabs: Array<ECSlab>;
   fixedChargeRate: number;
   validTill: string;
 };
 
-export type CreateCommercialRate = {
+export type CreateOrUpdateCommercialRate = {
   rateType: "Commercial";
   slabs: Array<ECSlab>;
   fixedChargeRate: Array<CommercialFCSlab>;
   validTill: string;
 };
 
-export type CreateIndustrialRate = {
+export type CreateOrUpdateIndustrialRate = {
   rateType: "Industrial";
   slabs: Array<IndustrialSlab>;
   fixedChargeRate: number;
