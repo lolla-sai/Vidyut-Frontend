@@ -86,7 +86,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
         <Box py="10">
           <Image
-            src="assets/vidyut-logo.svg"
+            src="/assets/vidyut-logo.svg"
             width={200}
             height={100}
             style={{

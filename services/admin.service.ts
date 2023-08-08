@@ -44,3 +44,14 @@ export const registerConsumer = (requestBody: any) =>
       withCredentials: true,
     })
     .then((res) => res.data);
+
+export const getComplaints = async () => {
+  const complaints = (
+    await axios.get("http://localhost:8080/api/admin/fetchComplaints", {
+      withCredentials: true,
+    })
+  ).data;
+
+  console.log(complaints.complaints, "COMPLAINTS")
+  return complaints.complaints;
+};

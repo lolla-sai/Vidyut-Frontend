@@ -22,6 +22,9 @@ import {
 } from "@chakra-ui/react";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
+import { useQuery } from "react-query";
+import { getComplaints } from "@/services/admin.service";
+import { AxiosResponse } from "axios";
 
 interface Complaint {
   billDocId: string;
@@ -38,17 +41,49 @@ export default function ComplaintsPage() {
   const [billId, setBillId] = useState("");
   const [attachedDocuments, setAttachedDocuments] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [complaints, setComplaints] = useState<Complaint[]>([
-    {
-      billDocId: "iq6x3iqJKhNIdh63Wjt5",
-      complaintType: "meterReading",
-      consumerDocId: "Zfm6aGLs5pmmRxSzE9bq",
-      description:
-        "i have got a bill that is higher than my electricity consumption",
-      status: "Pending",
-      complaintId: "lfyWfQ1eiIE4EqBEoKYJ",
+  // const [complaints, setComplaints] = useState<Complaint[]>([
+  //   {
+  //     billDocId: "iq6x3iqJKhNIdh63Wjt5",
+  //     complaintType: "meterReading",
+  //     consumerDocId: "Zfm6aGLs5pmmRxSzE9bq",
+  //     description:
+  //       "i have got a bill that is higher than my electricity consumption",
+  //     status: "Pending",
+  //     complaintId: "lfyWfQ1eiIE4EqBEoKYJ",
+  //   },
+  // ]);
+  const complaints = useQuery("complaints", getComplaints, {
+    onError({
+      response,
+      code,
+    }: {
+      code: string;
+      status: number;
+      response: AxiosResponse;
+    }) {
+      if (response && response.status === 400) {
+        toast({
+          title: "Your session is expired",
+          status: "error",
+          isClosable: true,
+        });
+
+        router.push("/auth/login");
+      } else if (code == "ERR_NETWORK") {
+        toast({
+          title: "Network error, cannot connect",
+          status: "error",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: response.data.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
     },
-  ]);
+  });
 
   return (
     <Box>
@@ -60,11 +95,10 @@ export default function ComplaintsPage() {
       </Text>
 
       <Box mb="4">
-        {complaints.length === 0 ? (
+        {!complaints.isLoading && complaints.data.length === 0 ? (
           <Text>No complaints yet.</Text>
         ) : (
           <>
-            {/* Complaints */}
             <TableContainer rounded="xl" border="1px" borderColor="orange.100">
               <Box overflowY="auto" maxHeight="400px">
                 <Table variant="simple">
@@ -72,56 +106,55 @@ export default function ComplaintsPage() {
                     <Tr>
                       <Th color="gray.100">Complaint ID</Th>
                       <Th color="gray.100">Description</Th>
-                      <Th color="gray.100">Bill ID</Th>
-                      <Th color="gray.100">Consumer ID</Th>
+                      <Th color="gray.100">Consumer Name</Th>
                       <Th color="gray.100">Complaint Type</Th>
                       <Th color="gray.100">Status</Th>
                       <Th></Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {loading ? (
+                    {complaints.isLoading ? (
                       <Tr>
                         <Td colSpan={6}>
                           <Loader text="Fetching Complaints..." />
                         </Td>
                       </Tr>
                     ) : (
-                      complaints.map((complaint: Complaint) => (
-                        <Tr
-                          _hover={{
-                            bg: "gray.100",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            router.push("bills/" + complaint.billDocId)
-                          }
-                          key={complaint.complaintId}
-                        >
-                          <Td>
-                            <HStack>
-                              <Box></Box>
-                              <Text>{complaint.complaintId}</Text>
-                            </HStack>
-                          </Td>
-                          <Td>{complaint.description}</Td>
-                          <Td>{complaint.billDocId}</Td>
-                          <Td>{complaint.consumerDocId}</Td>
-                          <Td isNumeric>{complaint.complaintType}</Td>
-                          <Td>{complaint.status}</Td>
-                          <Td>
-                            {/* View Bill Button */}
-                            <Button
-                              as="a"
-                              href={`http://localhost:8080/api/consumer/render-bill/${complaint.billDocId}`}
-                              target="_blank"
-                              colorScheme="blue"
-                            >
-                              View Bill
-                            </Button>
-                          </Td>
-                        </Tr>
-                      ))
+                      complaints.data.map(
+                        (complaint: Complaint & { consumerName: string }) => (
+                          <Tr
+                            _hover={{
+                              bg: "gray.100",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              router.push("bills/" + complaint.complaintId)
+                            }
+                            key={complaint.complaintId}
+                          >
+                            <Td>
+                              <HStack>
+                                <Box></Box>
+                                <Text>{complaint.complaintId}</Text>
+                              </HStack>
+                            </Td>
+                            <Td>{complaint.description}</Td>
+                            <Td>{complaint.consumerName}</Td>
+                            <Td isNumeric>{complaint.complaintType}</Td>
+                            <Td>{complaint.status}</Td>
+                            <Td>
+                              <Button
+                                as="a"
+                                href={`http://localhost:8080/api/consumer/render-bill/${complaint.billDocId}`}
+                                target="_blank"
+                                colorScheme="blue"
+                              >
+                                View Bill
+                              </Button>
+                            </Td>
+                          </Tr>
+                        )
+                      )
                     )}
                   </Tbody>
                 </Table>
@@ -132,4 +165,7 @@ export default function ComplaintsPage() {
       </Box>
     </Box>
   );
+}
+function toast(arg0: { title: string; status: string; isClosable: boolean }) {
+  throw new Error("Function not implemented.");
 }
