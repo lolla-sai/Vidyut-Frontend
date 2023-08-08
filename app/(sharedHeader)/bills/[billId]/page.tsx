@@ -2,12 +2,15 @@
 
 import CustomInput from "@/components/CustomInput";
 import { bills } from "@/data/dummy";
+import { getBill } from "@/services/bills.services";
 import {
   Box,
   Button,
+  Flex,
   HStack,
   Input,
   SimpleGrid,
+  Spinner,
   Table,
   TableCaption,
   TableContainer,
@@ -18,12 +21,15 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import moment from "moment";
-import React from "react";
+import router from "next/router";
+import React, { useEffect } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { FiSave } from "react-icons/fi";
 import { MdDangerous } from "react-icons/md";
+import { useQuery } from "react-query";
 import * as Yup from "yup";
 
 function CustomInputSimple({
@@ -53,11 +59,52 @@ function CustomInputSimple({
 }
 
 function BillDetail({ params }: { params: { billId: string } }) {
-  const bill = bills[0];
+  const bill = useQuery(["billDetails", { billId: params.billId }], getBill, {
+    onError({ response, code }: { code: string; response: AxiosResponse }) {
+      if (response && response.status === 400) {
+        toast({
+          title: "Your session is expired",
+          status: "error",
+          isClosable: true,
+        });
+        router.push("/auth/login");
+      } else if (code == "ERR_NETWORK") {
+        toast({
+          title: "Network error, cannot connect",
+          status: "error",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: response.data.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    },
+  });
+
+  useEffect(() => {
+    console.log(bill);
+  }, [bill]);
+
+  if (bill.isLoading) {
+    return (
+      <>
+        {/* Loading Spinner */}
+        <Flex align="center" justify="center" p="4" my="12">
+          <HStack spacing="4">
+            <Spinner size="lg" />
+            <Text>Loading Bill</Text>
+          </HStack>
+        </Flex>
+      </>
+    );
+  }
 
   return (
     <Box>
-      <title>{"Bill - " + params.billId}</title>
+      <title>{"Bill - " + bill.data.billDocId}</title>
 
       <Text fontSize="xl" fontFamily="custom">
         You can view/edit bills here. Any corrections will send a mail to the
@@ -70,7 +117,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
           <Text fontSize="2xl">
             Bill ID:
             <Text as="span" fontWeight="bold" ml="2">
-              {bill.billId}
+              {bill.data.billDocId}
             </Text>
           </Text>
 
@@ -92,7 +139,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
 
         {/* Payment status */}
         <Box mb="8">
-          {bill.paid ? (
+          {bill.data.paid ? (
             <HStack
               bg="green.400"
               mb="4"
@@ -106,7 +153,9 @@ function BillDetail({ params }: { params: { billId: string } }) {
                 Bill Paid
               </Text>
             </HStack>
-          ) : moment().isBefore(moment(bill.dueDate).format("MM-DD-YYYY")) ? (
+          ) : moment().isBefore(
+              moment(bill.data.dueDate).format("MM-DD-YYYY")
+            ) ? (
             <HStack
               bg="yellow.600"
               mb="4"
@@ -142,13 +191,13 @@ function BillDetail({ params }: { params: { billId: string } }) {
             {/* Meter Number */}
             <CustomInputSimple
               label="Meter Number: "
-              value={bill.meterNumber.toString()}
+              value={bill.data.meterNumber.toString()}
             />
 
             {/* Meter Reading */}
             <CustomInputSimple
               label="Meter Reading: "
-              value={bill.currentReading.toString()}
+              value={bill.data.currentReading.toString()}
               readOnly={false}
             />
 
@@ -176,7 +225,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {bill.breakage.map((slabRate) => (
+                  {bill.data.breakage.map((slabRate) => (
                     <Tr key={slabRate.rate}>
                       <Td isNumeric>{slabRate.quantity}</Td>
                       <Td isNumeric>
@@ -198,7 +247,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
                     <Td isNumeric colSpan={2}>
                       Total:{" "}
                       <Text as="span" fontWeight="bold">
-                        Rs. {bill.totalCharge}
+                        Rs. {bill.data.totalCharge}
                       </Text>
                     </Td>
                   </Tr>
@@ -220,14 +269,14 @@ function BillDetail({ params }: { params: { billId: string } }) {
           </Box>
 
           <Box>
-            <CustomInputSimple label="Name" value={bill.fullName} />
+            <CustomInputSimple label="Name" value={bill.data.fullName} />
             <CustomInputSimple
               label="Consumer ID: "
-              value={bill.consumerDocId}
+              value={bill.data.consumerDocId}
             />
             <CustomInputSimple
               label="Subsidy Discount"
-              value={bill.subsidyDiscount}
+              value={bill.data.subsidyDiscount}
             />
           </Box>
         </SimpleGrid>
@@ -237,3 +286,6 @@ function BillDetail({ params }: { params: { billId: string } }) {
 }
 
 export default BillDetail;
+function toast(arg0: { title: string; status: string; isClosable: boolean }) {
+  throw new Error("Function not implemented.");
+}

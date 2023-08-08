@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -11,7 +11,9 @@ import {
   FormControl,
   FormLabel,
   VStack,
+  HStack,
   Spacer,
+  Select,
 } from "@chakra-ui/react";
 
 interface Complaint {
@@ -23,40 +25,21 @@ interface Complaint {
 
 export default function ComplaintsPage() {
   const [complaintText, setComplaintText] = useState("");
-  const [billId, setBillId] = useState("");
-  const [consumerId, setConsumerId] = useState("");
+  const [billId, setBillId] = useState<string | null>(null);
+  const [consumerId, setConsumerId] = useState<string | null>(null);
   const [attachedDocuments, setAttachedDocuments] = useState<string[]>([]);
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [complaint, setComplaint] = useState<string | null>(null);
+  const [complaintType, setComplaintType] = useState<
+    "meterReading" | "slabRate" | null
+  >(null);
 
-  const handleComplaintSubmit = () => {
-    if (
-      complaintText.trim() === "" ||
-      billId.trim() === "" ||
-      attachedDocuments.length === 0
-    ) {
-      // You can display an error message here or prevent the submission if fields are empty
-      return;
-    }
+  const handleComplaintSubmit = () => {};
 
-    const newComplaint: Complaint = {
-      id: complaints.length + 1,
-      text: complaintText,
-      documents: attachedDocuments,
-      billId: billId,
-    };
-    setComplaints([...complaints, newComplaint]);
-    setComplaintText("");
-    setBillId("");
-    setAttachedDocuments([]);
-  };
-
-  const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const fileNames = Array.from(files).map((file) => file.name);
-      setAttachedDocuments([...attachedDocuments, ...fileNames]);
-    }
-  };
+  useEffect(() => {
+    console.log(
+      `BillId: ${billId}\n ConsumerId: ${consumerId}\n complaint: ${complaint}\n complaintType: ${complaintType}`
+    );
+  }, [billId, consumerId, complaint, complaintType]);
 
   return (
     <Container maxW="xl" mt={10}>
@@ -64,7 +47,6 @@ export default function ComplaintsPage() {
       <FormControl isRequired>
         <FormLabel>Bill ID</FormLabel>
         <Input
-          value={billId}
           onChange={(e) => setBillId(e.target.value)}
           placeholder="Enter bill ID"
           mb={2}
@@ -73,17 +55,40 @@ export default function ComplaintsPage() {
       <FormControl isRequired>
         <FormLabel>Consumer ID</FormLabel>
         <Input
-          value={consumerId}
-          onChange={(e) => setBillId(e.target.value)}
+          onChange={(e) => setConsumerId(e.target.value)}
           placeholder="Enter consumer ID"
           mb={2}
         />
       </FormControl>
       <FormControl isRequired>
+        <FormLabel>Select the type of complaint</FormLabel>
+        <Select
+          onChange={(e) => {
+            switch (e.target.value as "meterReading" | "slabRate") {
+              case "meterReading":
+                setComplaintType("meterReading");
+                break;
+              case "slabRate":
+                setComplaintType("slabRate");
+                break;
+              default:
+                setComplaintType(null);
+                break;
+            }
+          }}
+          placeholder="Select option"
+          size="lg"
+          mb={2}
+        >
+          <option value="meterReading">Meter Reading</option>
+          <option value="slabRate">Slab Rate</option>
+        </Select>
+      </FormControl>
+      <FormControl isRequired>
         <FormLabel>Add Complaint</FormLabel>
         <Input
           value={complaintText}
-          onChange={(e) => setComplaintText(e.target.value)}
+          onChange={(e) => setComplaint(e.target.value)}
           placeholder="Enter complaint text"
           mb={2}
         />
@@ -91,28 +96,6 @@ export default function ComplaintsPage() {
       <Button onClick={handleComplaintSubmit} colorScheme="blue">
         Submit
       </Button>
-      <VStack mt={4} align="start" spacing={4}>
-        {complaints.map((complaint) => (
-          <Box
-            key={complaint.id}
-            p={4}
-            border="1px"
-            borderColor="gray.200"
-            borderRadius="md"
-          >
-            <Text>{complaint.text}</Text>
-            <Text>Bill ID: {complaint.billId}</Text>
-            {complaint.documents.length > 0 && (
-              <VStack align="start" mt={2} spacing={1}>
-                <Text fontWeight="bold">Attached Documents:</Text>
-                {complaint.documents.map((document, index) => (
-                  <Text key={index}>{document}</Text>
-                ))}
-              </VStack>
-            )}
-          </Box>
-        ))}
-      </VStack>
     </Container>
   );
 }

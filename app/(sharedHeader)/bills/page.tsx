@@ -2,7 +2,7 @@
 
 import Dropfile from "@/components/DropFile";
 import { bills } from "@/data/dummy";
-import { csvToJson } from "@/services/bills.services";
+import { csvToJson, getBills } from "@/services/bills.services";
 import {
   Badge,
   Box,
@@ -21,16 +21,21 @@ import {
   Thead,
   Tr,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment";
 import Loader from "@/components/Loader";
+import axios, { AxiosResponse } from "axios";
+import { useQuery } from "react-query";
 
 function Bills() {
   const router = useRouter();
-  const [flatFiles, setFlatFiles] = useState([]);
+  const [flatFile, setFlatFile] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [failedBills, setFailedBills] = useState([]);
+  const toast = useToast();
   const onDrop = useCallback((acceptedFiles: any) => {
     let file = acceptedFiles[0];
     const reader = new FileReader();
@@ -39,57 +44,147 @@ function Bills() {
     reader.onerror = () => console.log("file reading has failed");
     reader.onload = async () => {
       const res = await csvToJson(reader.result);
-      setFlatFiles(res);
+      setFlatFile(res);
       console.log(res);
     };
+
     reader.readAsText(file);
   }, []);
+
+  const bills = useQuery("Bills", getBills, {
+    onError({ response, code }: { code: string; response: AxiosResponse }) {
+      if (response && response.status === 400) {
+        toast({
+          title: "Your session is expired",
+          status: "error",
+          isClosable: true,
+        });
+        router.push("/auth/login");
+      } else if (code == "ERR_NETWORK") {
+        toast({
+          title: "Network error, cannot connect",
+          status: "error",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: response.data.message,
+          status: "error",
+          isClosable: true,
+        });
+      }
+    },
+  });
+
+  useEffect(() => {
+    console.log(bills, "Bills");
+  }, [bills]);
+
+  const handleBillGeneration = () => {
+    if (flatFile.length !== 0) {
+      axios
+        .post(
+          "http://localhost:8080/api/billing/createBill",
+          {
+            billReadings: flatFile,
+          } as {
+            billReadings: Array<{
+              consumerId: string;
+              meterNumber: number;
+              currentReading: number;
+              dateOfReading: string;
+              dueDate: string;
+            }>;
+          },
+          { withCredentials: true }
+        )
+        .then(({ data }) => {
+          console.log(data);
+          setFailedBills(data.failedBills);
+          setFlatFile([]);
+          toast({
+            title: data.message,
+            status: "success",
+            isClosable: true,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      toast({
+        title: "Flat file not added",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box>
       <Flex align="center">
-        {flatFiles.length === 0 ? (
+        {flatFile.length === 0 && failedBills.length == 0 ? (
           <Dropfile onDrop={onDrop} />
-        ) : (
+        ) : failedBills.length > 0 ? (
           <>
             <TableContainer flexGrow="1" px="8" maxH="64" overflowY="auto">
               <Table variant="simple">
-                <TableCaption>Data Readed from File</TableCaption>
+                <TableCaption>Failed bills</TableCaption>
                 <Thead>
                   <Tr>
                     <Th>Consumer ID</Th>
-                    <Th>Date Of Reading</Th>
-                    <Th isNumeric>Meter Reading</Th>
-                    <Th isNumeric>Current Reading</Th>
+                    <Th>Failure Reason</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {flatFiles.map((row) => (
+                  {failedBills.map((row) => (
                     <Tr key={row["consumerId"]}>
                       <Td>{row["consumerId"]}</Td>
-                      <Td>{row["dateOfReading"]}</Td>
-                      <Td isNumeric>{row["meterNumber"]}</Td>
-                      <Td isNumeric>{row["currentReading"]}</Td>
+                      <Td>{row["reason"]}</Td>
                     </Tr>
                   ))}
                 </Tbody>
               </Table>
             </TableContainer>
           </>
+        ) : flatFile.length > 0 ? (
+          <TableContainer flexGrow="1" px="8" maxH="64" overflowY="auto">
+            <Table variant="simple">
+              <TableCaption>Data Readed from File</TableCaption>
+              <Thead>
+                <Tr>
+                  <Th>Consumer ID</Th>
+                  <Th>Date Of Reading</Th>
+                  <Th isNumeric>Meter Reading</Th>
+                  <Th isNumeric>Current Reading</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {flatFile.map((row) => (
+                  <Tr key={row["consumerId"]}>
+                    <Td>{row["consumerId"]}</Td>
+                    <Td>{row["dateOfReading"]}</Td>
+                    <Td isNumeric>{row["meterNumber"]}</Td>
+                    <Td isNumeric>{row["currentReading"]}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <></>
         )}
 
         <Box>
           <VStack>
-            <Button w="full" colorScheme="green">
-              Generate Bills
-            </Button>
             <Button
               w="full"
-              colorScheme="red"
-              onClick={() => {
-                setFlatFiles([]);
-              }}
+              colorScheme="green"
+              onClick={() => handleBillGeneration()}
             >
+              Generate Bills
+            </Button>
+            <Button w="full" colorScheme="red" onClick={() => setFlatFile([])}>
               Cancel
             </Button>
           </VStack>
@@ -120,14 +215,14 @@ function Bills() {
               </Tr>
             </Thead>
             <Tbody>
-              {isLoading && (
+              {bills.isLoading && (
                 <Tr>
                   <Td colSpan={6}>
                     <Loader text="Fetching Bills..." />
                   </Td>
                 </Tr>
               )}
-              {bills.length === 1 && (
+              {bills?.data?.length === 0 && (
                 <Tr>
                   <Td colSpan={6}>
                     <Text textAlign="center">No bills to show</Text>
@@ -135,7 +230,8 @@ function Bills() {
                 </Tr>
               )}
               {bills &&
-                bills.map((bill) => (
+                bills.data &&
+                bills.data.map((bill) => (
                   <Tr
                     _hover={{
                       bg: "gray.100",
@@ -143,7 +239,13 @@ function Bills() {
                     }}
                     color="gray.800"
                     key={bill.billId}
-                    onClick={() => router.push(`./bills/${bill.billId}`)}
+                    // onClick={() => router.push(`./bills/${bill.billId}`)}
+                    onClick={() =>
+                      window.open(
+                        `http://localhost:8080/api/consumer/render-bill/${bill.billId}`,
+                        "_blank"
+                      )
+                    }
                   >
                     <Td isNumeric>{bill.consumerType}</Td>
                     <Td>{bill.consumerDocId}</Td>
