@@ -5,16 +5,15 @@ import {
   Box,
   Container,
   Heading,
-  Text,
   Button,
   Input,
   FormControl,
   FormLabel,
-  VStack,
-  HStack,
-  Spacer,
   Select,
+  useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Complaint {
   id: number;
@@ -27,19 +26,168 @@ export default function ComplaintsPage() {
   const [complaintText, setComplaintText] = useState("");
   const [billId, setBillId] = useState<string | null>(null);
   const [consumerId, setConsumerId] = useState<string | null>(null);
-  const [attachedDocuments, setAttachedDocuments] = useState<string[]>([]);
   const [complaint, setComplaint] = useState<string | null>(null);
   const [complaintType, setComplaintType] = useState<
     "meterReading" | "slabRate" | null
   >(null);
+  const [otp, setOtp] = useState<number | null>(null);
+  const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [otpVerified, setOtpVerified] = useState<boolean>(false);
+  const toast = useToast();
+  const router = useRouter();
 
-  const handleComplaintSubmit = () => {};
+  const handleComplaintSubmit = () => {
+    if (consumerId && billId && complaint && complaintType && otpVerified) {
+      axios
+        .post(
+          "http://localhost:8080/api/consumer/createComplaint",
+          {
+            billDocId: billId,
+            complaintType: complaintType,
+            consumerDocId: consumerId,
+            description: complaint,
+          } as {
+            description: string;
+            billDocId: string;
+            consumerDocId: string;
+            complaintType: string;
+          },
+          { withCredentials: true }
+        )
+        .then(({ data }) => {
+          console.log(data.message);
+          if (data.success) {
+            toast({
+              title: `Created complaint successfully`,
+              status: "success",
+              isClosable: true,
+            });
+          }
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          if (response.status == 400) {
+            toast({
+              title: `Session Expired`,
+              status: "error",
+              isClosable: true,
+            });
+            router.push("/auth/login");
+          } else {
+            toast({
+              title: response.data.message,
+              status: "error",
+              isClosable: true,
+            });
+          }
+
+          setOtpVerified(false);
+          setOtp(null);
+          setOtpSent(false);
+        });
+    } else {
+      toast({
+        title: otpVerified ? "Not fields can be empty" : "OTP not verified",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const sendOtp = () => {
+    if (consumerId) {
+      axios
+        .get(`http://localhost:8080/api/consumer/otp/${consumerId}`)
+        .then(({ data }) => {
+          if (data.success) {
+            toast({
+              title: data.message,
+              status: "success",
+              isClosable: true,
+            });
+            setOtpSent(true);
+          }
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          if (response.status == 400) {
+            toast({
+              title: `Session Expired`,
+              status: "error",
+              isClosable: true,
+            });
+            router.push("/auth/login");
+          } else {
+            toast({
+              title: response.data.message,
+              status: "error",
+              isClosable: true,
+            });
+          }
+        });
+    } else {
+      toast({
+        title: "ConsumerId cannot be null",
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const verifyOtp = () => {
+    axios
+      .post("http://localhost:8080/api/consumer/verify-otp", {
+        consumerId: consumerId,
+        otp: otp,
+      } as { consumerId: string; otp: number })
+      .then(({ data }) => {
+        if (data.success) {
+          toast({
+            title: data.message,
+            status: "success",
+            isClosable: true,
+          });
+          setOtpSent(true);
+          setOtpVerified(true);
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.status == 400) {
+          toast({
+            title: `Session Expired`,
+            status: "error",
+            isClosable: true,
+          });
+          router.push("/auth/login");
+        } else if (response.status == 401) {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+          setOtpVerified(false);
+        } else {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      });
+  };
 
   useEffect(() => {
     console.log(
       `BillId: ${billId}\n ConsumerId: ${consumerId}\n complaint: ${complaint}\n complaintType: ${complaintType}`
     );
   }, [billId, consumerId, complaint, complaintType]);
+
+  useEffect(() => {
+    if (otpVerified) {
+      handleComplaintSubmit();
+    }
+  }, [otpVerified]);
 
   return (
     <Container maxW="xl" mt={10}>
@@ -87,15 +235,30 @@ export default function ComplaintsPage() {
       <FormControl isRequired>
         <FormLabel>Add Complaint</FormLabel>
         <Input
-          value={complaintText}
+          value={complaint}
           onChange={(e) => setComplaint(e.target.value)}
           placeholder="Enter complaint text"
           mb={2}
         />
       </FormControl>
-      <Button onClick={handleComplaintSubmit} colorScheme="blue">
-        Submit
-      </Button>
+      <FormControl isRequired>
+        <FormLabel>Enter OTP</FormLabel>
+        <Input
+          value={otp || ""}
+          onChange={(e) => setOtp(Number(e.target.value))}
+          placeholder="Enter otp"
+          mb={2}
+          type="number"
+          disabled={!otpSent}
+        />
+      </FormControl>
+      {otp || otpSent ? (
+        <Button onClick={verifyOtp} colorScheme="blue">
+          Submit
+        </Button>
+      ) : (
+        <Button onClick={() => sendOtp()}>Send OTP</Button>
+      )}
     </Container>
   );
 }

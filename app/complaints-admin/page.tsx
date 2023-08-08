@@ -17,6 +17,7 @@ import {
   ListIcon,
 } from '@chakra-ui/react';
 import { AiOutlineFile } from 'react-icons/ai';
+import { useQuery } from 'react-query';
 
 interface Complaint {
   id: number;
@@ -30,7 +31,6 @@ export default function ComplaintsPage() {
   const [billId, setBillId] = useState('');
   const [attachedDocuments, setAttachedDocuments] = useState<string[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
-
   const handleComplaintSubmit = () => {
     if (complaintText.trim() === '' || billId.trim() === '' || attachedDocuments.length === 0) {
       // You can display an error message here or prevent the submission if fields are empty
