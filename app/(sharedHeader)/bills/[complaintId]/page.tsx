@@ -2,8 +2,9 @@
 
 import CustomInput from "@/components/CustomInput";
 import Loader from "@/components/Loader";
+import { ConsumerType, ECSlab, IndustrialSlab } from "@/data/custom";
 import { bills } from "@/data/dummy";
-import { getBill } from "@/services/bills.services";
+import { getBill, getComplaint } from "@/services/bills.services";
 import {
   Box,
   Button,
@@ -22,8 +23,9 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import moment from "moment";
 import router from "next/router";
@@ -60,35 +62,46 @@ function CustomInputSimple({
   );
 }
 
-function BillDetail({ params }: { params: { billId: string } }) {
-  const bill = useQuery(["billDetails", { billId: params.billId }], getBill, {
-    onError({ response, code }: { code: string; response: AxiosResponse }) {
-      if (response && response.status === 400) {
-        toast({
-          title: "Your session is expired",
-          status: "error",
-          isClosable: true,
-        });
-        router.push("/auth/login");
-      } else if (code == "ERR_NETWORK") {
-        toast({
-          title: "Network error, cannot connect",
-          status: "error",
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: response.data.message,
-          status: "error",
-          isClosable: true,
-        });
-      }
-    },
-  });
+function ComplaintDetail({ params }: { complaintId: string }) {
+  const toast = useToast();
+  const complaint = useQuery(
+    ["billDetails", { complaintId: params.complaintId }],
+    getComplaint,
+    {
+      onError({ response, code }: { code: string; response: AxiosResponse }) {
+        if (response && response.status === 400) {
+          toast({
+            title: "Your session is expired",
+            status: "error",
+            isClosable: true,
+          });
+          router.push("/auth/login");
+        } else if (response.status === 404) {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+        } else if (code == "ERR_NETWORK") {
+          toast({
+            title: "Network error, cannot connect",
+            status: "error",
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      },
+    }
+  );
 
   const formik = useFormik({
     initialValues: {
-      currentReading: bill.data?.currentReading,
+      currentReading: complaint.data?.currentReading,
       slabs: [],
     },
     validationSchema: Yup.object({
@@ -104,27 +117,139 @@ function BillDetail({ params }: { params: { billId: string } }) {
       ),
     }),
     onSubmit(values) {
-      console.log(values);
+      console.log(values, "VALUES");
+      switch (
+        complaint.data.complaint.complaintType as "meterReading" | "slabRate"
+      ) {
+        case "meterReading":
+          handleMeterReadingUpdate();
+          break;
+        case "slabRate":
+          handleSlabRateUpdate();
+          break;
+      }
     },
   });
 
+  const handleMeterReadingUpdate = () => {
+    console.log(
+      {
+        billId: complaint.data.complaint.billDocId,
+        newReading: Number(formik.values.currentReading),
+      },
+      "Meter Reading"
+    );
+    axios
+      .post(
+        "http://localhost:8080/api/billing/billCorrectionMeterReading",
+        {
+          billId: complaint.data.complaint.billDocId,
+          newReading: formik.values.currentReading,
+        } as {
+          billId: string;
+          newReading: number;
+        },
+        { withCredentials: true }
+      )
+      .then(({ data }) => {
+        console.log(data);
+        if (data.success) {
+          toast({
+            title: data.message,
+            status: "success",
+            isClosable: true,
+          });
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.status == 400) {
+          toast({
+            title: `Session Expired`,
+            status: "error",
+            isClosable: true,
+          });
+          router.push("/auth/login");
+        } else {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      });
+  };
+  const handleSlabRateUpdate = () => {
+    console.log(
+      {
+        rateType: complaint.data.consumerType,
+        complaintId: params.complaintId,
+        slabs: formik.values.slabs,
+      },
+      "SLAB"
+    );
+    axios
+      .post(
+        "http://localhost:8080/api/billing/billCorrectionSlabRate",
+        {
+          rateType: complaint.data.consumerType,
+          complaintId: params.complaintId,
+          slabs: formik.values.slabs,
+        } as {
+          rateType: ConsumerType;
+          slabs: Array<ECSlab | IndustrialSlab>;
+          complaintId: string;
+        },
+        { withCredentials: true }
+      )
+      .then(({ data }) => {
+        console.log(data.message);
+        if (data.success) {
+          toast({
+            title: data.message,
+            status: "success",
+            isClosable: true,
+          });
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.status == 400) {
+          toast({
+            title: `Session Expired`,
+            status: "error",
+            isClosable: true,
+          });
+          router.push("/auth/login");
+        } else {
+          toast({
+            title: response.data.message,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      });
+  };
+
   useEffect(() => {
-    if (bill.data?.currentReading) {
-      console.log(bill.data);
+    if (complaint.data?.currentReading) {
+      console.log(complaint.data);
       formik.setValues({
-        currentReading: bill.data.currentReading,
-        slabs: bill.data.rateDoc.slabs,
+        currentReading: complaint.data.currentReading,
+        slabs: complaint.data.rateDoc.slabs,
       });
     }
-  }, [bill.data]);
 
-  if (bill.isLoading) {
+    console.log(complaint.data);
+  }, [complaint.data]);
+
+  if (complaint.isLoading) {
     return <Loader text="Loading Bill" />;
   }
 
   return (
     <Box>
-      <title>{"Bill - " + bill.data.billDocId}</title>
+      <title>{"Bill - " + complaint.data.billDocId}</title>
 
       <Text fontSize="xl" fontFamily="custom">
         You can view/edit bills here. Any corrections will send a mail to the
@@ -139,7 +264,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
               <Text fontSize="2xl">
                 Complaint ID:{" "}
                 <Text as="span" fontWeight="bold" ml="2">
-                  {bill.data.billDocId}
+                  {params.complaintId}
                 </Text>
               </Text>
               <Text
@@ -166,7 +291,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
           <Text fontSize="2xl">
             Bill ID:
             <Text as="span" fontWeight="bold" ml="2">
-              {bill.data.billDocId}
+              {complaint.data.complaint.billDocId}
             </Text>
           </Text>
 
@@ -181,13 +306,13 @@ function BillDetail({ params }: { params: { billId: string } }) {
             fontSize="xs"
             fontWeight="bold"
           >
-            {bill.data.consumerType.toUpperCase()}
+            {complaint.data.consumerType.toUpperCase()}
           </Text>
         </HStack>
 
         {/* Payment status */}
         <Box mb="8">
-          {bill.data.paid ? (
+          {complaint.data.paid ? (
             <HStack
               bg="green.400"
               mb="4"
@@ -202,7 +327,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
               </Text>
             </HStack>
           ) : moment().isBefore(
-              moment(bill.data.dueDate).format("MM-DD-YYYY")
+              moment(complaint.data.dueDate).format("MM-DD-YYYY")
             ) ? (
             <HStack
               bg="yellow.600"
@@ -239,26 +364,29 @@ function BillDetail({ params }: { params: { billId: string } }) {
             {/* Meter Number */}
             <CustomInputSimple
               label="Meter Number: "
-              value={bill.data.meterNumber.toString()}
+              value={complaint.data.meterNumber.toString()}
             />
 
-            <CustomInput
-              label="Meter Reading"
-              fieldName="currentReading"
-              type="number"
-              formik={formik}
-              legacy={true}
-            />
-
-            <CustomInputSimple label="Name" value={bill.data.fullName} />
+            <CustomInputSimple label="Name" value={complaint.data.fullName} />
             <CustomInputSimple
               label="Consumer ID: "
-              value={bill.data.consumerDocId}
+              value={complaint.data.consumerDocId}
             />
             <CustomInputSimple
               label="Subsidy Discount"
-              value={bill.data.subsidyDiscount || 0}
+              value={complaint.data.subsidyDiscount || 0}
             />
+            {complaint.data.complaint.complaintType == "meterReading" ? (
+              <CustomInput
+                label="Meter Reading"
+                fieldName="currentReading"
+                type="number"
+                formik={formik}
+                legacy={true}
+              />
+            ) : (
+              <></>
+            )}
 
             {/* Save Changes Button */}
             <Button
@@ -273,7 +401,15 @@ function BillDetail({ params }: { params: { billId: string } }) {
             </Button>
           </Box>
 
-          <Box flexGrow="2" mr="4">
+          <Box
+            flexGrow="2"
+            mr="4"
+            visibility={
+              complaint.data.complaint.complaintType == "slabRate"
+                ? "visible"
+                : "hidden"
+            }
+          >
             {/* Table with breakages */}
             <TableContainer
               // my="8"
@@ -332,7 +468,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
   );
 }
 
-export default BillDetail;
+export default ComplaintDetail;
 function toast(arg0: { title: string; status: string; isClosable: boolean }) {
   throw new Error("Function not implemented.");
 }

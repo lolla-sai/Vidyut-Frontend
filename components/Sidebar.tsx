@@ -29,7 +29,7 @@ import {
 import { FaUserAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { IconType } from "react-icons";
-import { usePathname } from "next-nprogress-bar";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 interface LinkItemProps {
@@ -57,7 +57,6 @@ const LinkItems: Array<LinkItemProps> = [
   { name: "Complaints", icon: FiTrendingUp, href: "/complaints-admin" },
   { name: "Bills", icon: FiCompass, href: "/bills" },
   { name: "Slabs And Rates", icon: FiStar, href: "/rates" },
-  { name: "Settings", icon: FiSettings, href: "/settings" },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -86,7 +85,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
         <Box py="10">
           <Image
-            src="assets/vidyut-logo.svg"
+            src="/assets/vidyut-logo.svg"
             width={200}
             height={100}
             style={{

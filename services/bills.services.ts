@@ -28,3 +28,19 @@ export const getBill = async ({ queryKey }: { queryKey: any }) => {
   console.log(bill);
   return bill.billData;
 };
+
+export const getComplaint = async ({ queryKey }: { queryKey: any }) => {
+  const [_, complaintId] = queryKey;
+  console.log(complaintId, "ComplaintId")
+  const complaint = (
+    await axios.get(`http://localhost:8080/api/admin/complaint-details/${complaintId.complaintId}`, {
+      withCredentials: true,
+      data: {
+        complaintId: complaintId,
+      },
+    })
+  ).data;
+
+  console.log(complaint);
+  return complaint.complaint;
+};
