@@ -29,7 +29,7 @@ import {
 import { FaUserAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { IconType } from "react-icons";
-import { usePathname } from "next/navigation";
+import { usePathname } from "next-nprogress-bar";
 import Image from "next/image";
 
 interface LinkItemProps {

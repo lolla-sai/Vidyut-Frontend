@@ -40,7 +40,7 @@ import {
   CreateOrUpdateIndustrialRate,
 } from "@/types/requestBody.types";
 import moment from "moment";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 function page({
   searchParams: { type },

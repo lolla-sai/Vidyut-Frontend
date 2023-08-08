@@ -22,7 +22,7 @@ import { FiSave } from "react-icons/fi";
 import { useQuery } from "react-query";
 import { getConsumerApplication } from "@/services/admin.service";
 import axios, { AxiosResponse } from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 function ApplicationDetails({ params }: { params: { consumerId: string } }) {
   const [consumerDetail, setConsumerDetail] = useState<User | null>(null);

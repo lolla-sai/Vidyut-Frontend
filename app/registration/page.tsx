@@ -22,7 +22,7 @@ import CustomInput from "@/components/CustomInput";
 import CustomSelect from "@/components/CustomSelect";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import { useMutation, useQuery } from "react-query";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { registerConsumer } from "@/services/admin.service";
 import NextLink from "next/link";
 

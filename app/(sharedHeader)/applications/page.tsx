@@ -19,7 +19,7 @@ import {
 
 import { AiFillShop, AiFillHome } from "react-icons/ai";
 import { BiSolidFactory } from "react-icons/bi";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { useQuery } from "react-query";
 import { getCurrentApplicationList } from "@/services/admin.service";
 import { useEffect } from "react";

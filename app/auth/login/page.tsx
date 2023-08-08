@@ -14,8 +14,8 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { redirect } from "next-nprogress-bar";
+import { useRouter } from "next-nprogress-bar";
 
 export default function SplitScreen() {
   const [uname, setUname] = useState<string | null>(null);

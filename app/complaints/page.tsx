@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 interface Complaint {
   id: number;

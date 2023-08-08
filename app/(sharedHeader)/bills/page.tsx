@@ -24,7 +24,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useCallback, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import moment from "moment";
 import Loader from "@/components/Loader";
 import axios, { AxiosResponse } from "axios";

@@ -21,7 +21,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import Loader from "@/components/Loader";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 interface Complaint {
   billDocId: string;
