@@ -231,6 +231,44 @@ function ComplaintDetail({ params }: { complaintId: string }) {
       });
   };
 
+  const changeComplaintStatus = (type: "Resolved" | "Rejected") => {
+    axios
+      .put(
+        "http://localhost:8080/api/admin/updateComplaintStatus",
+        {
+          status: type,
+          complaintId: params.complaintId
+        } as { status: "Resolve" | "Rejected", complaintId: string },
+        { withCredentials: true }
+      )
+      .then(({ data }) => {
+        if (data.success) {
+          toast({
+            title: data.message,
+            status: "success",
+            isClosable: true,
+          });
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.status == 400) {
+          toast({
+            title: `Session Expired`,
+            status: "error",
+            isClosable: true,
+          });
+          router.push("/auth/login");
+        } else {
+          toast({
+            title: response.data.error,
+            status: "error",
+            isClosable: true,
+          });
+        }
+      });
+  };
+
   useEffect(() => {
     if (complaint.data?.currentReading) {
       console.log(complaint.data);
@@ -277,12 +315,26 @@ function ComplaintDetail({ params }: { complaintId: string }) {
                 fontSize="xs"
                 fontWeight="bold"
               >
-                {"Pending".toUpperCase()}
+                {complaint.data.complaint.status.toUpperCase()}
               </Text>
             </HStack>
             <ButtonGroup variant="outline" spacing="6">
-              <Button colorScheme="green">Resolve</Button>
-              <Button colorScheme="red">Reject</Button>
+              <Button
+                colorScheme="green"
+                onClick={() => {
+                  changeComplaintStatus("Resolved");
+                }}
+              >
+                Resolve
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  changeComplaintStatus("Rejected");
+                }}
+              >
+                Reject
+              </Button>
             </ButtonGroup>
           </HStack>
         </Box>
