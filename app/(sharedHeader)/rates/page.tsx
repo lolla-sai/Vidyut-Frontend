@@ -48,7 +48,7 @@ function page({
   searchParams: { type: ConsumerType | null };
 }) {
   const [consumerType, setConsumerType] = useState<ConsumerType | null>(
-    type || "Commercial"
+    type || ""
   );
   const [rateCard, setRateCard] = useState<
     DomesticRate | IndustrialRate | CommercialRate | null
@@ -101,17 +101,20 @@ function page({
     if (rates.data) {
       switch (consumerType) {
         case "Domestic":
-          setRateCard(rates.data?.domesticRate);
+          setRateCard(rates.data.domesticRate);
+          console.log("Setting Domestic");
           break;
         case "Commercial":
-          setRateCard(rates.data?.commercialRate);
+          setRateCard(rates.data.commercialRate);
+          console.log("Setting Commercial");
           break;
         case "Industrial":
-          setRateCard(rates.data?.industrialRate);
+          setRateCard(rates.data.industrialRate);
+          console.log("Setting Industrial");
           break;
       }
     }
-  }, [consumerType, rates.data]);
+  }, [consumerType]);
 
   const handleAddNewRateOrUpdate = async (type: string) => {
     axios
@@ -166,6 +169,10 @@ function page({
   useEffect(() => {
     console.log(slabs, "Slabs");
   }, [slabs]);
+
+  useEffect(() => {
+    console.log(rates, "RATES");
+  }, [rates]);
 
   useEffect(() => {
     console.log(validTill, "Valid Till");
@@ -359,9 +366,7 @@ function page({
                           <Input
                             key={rateCard?.id}
                             type="number"
-                            defaultValue={(
-                              rateCard?.fixedChargeRate || ""
-                            ).toString()}
+                            defaultValue={rateCard?.fixedChargeRate}
                             maxW="10ch"
                             size="sm"
                             onChange={(e) => {
@@ -380,9 +385,13 @@ function page({
                           <Input
                             key={rateCard?.id}
                             type="date"
-                            defaultValue={moment(rateCard?.validTill)
-                              .toISOString()
-                              .substring(0, 10)}
+                            defaultValue={
+                              rateCard?.validTill
+                                ? moment(rateCard?.validTill)
+                                    .toISOString()
+                                    .substring(0, 10)
+                                : ""
+                            }
                             onChange={(e) => {
                               setValidTill(
                                 moment(e.target.value)
@@ -419,43 +428,45 @@ function page({
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {rateCard?.slabs.map((slabRate) => (
-                      <Tr key={consumerType + slabRate.range}>
-                        <Td>{slabRate.range}</Td>
-                        <Td isNumeric>
-                          <Input
-                            key={slabRate.range}
-                            maxW="20ch"
-                            textAlign="right"
-                            defaultValue={slabRate.pricePerUnit}
-                            type="number"
-                            onChange={(e) => {
-                              setSlabs((prev: ECSlab[] | IndustrialSlab[]) => {
-                                var updatedUnitCharge = prev.map((slab) => {
-                                  if (slab.range == slabRate.range) {
-                                    slab.pricePerUnit = Number(e.target.value);
+                    {consumerType &&
+                      rateCard &&
+                      rateCard.slabs.map((slabRate) => (
+                        <Tr
+                          key={
+                            consumerType +
+                            slabRate.range +
+                            slabRate.pricePerUnit
+                          }
+                        >
+                          <Td>{slabRate.range}</Td>
+                          <Td isNumeric>
+                            <Input
+                              key={slabRate.range}
+                              maxW="20ch"
+                              textAlign="right"
+                              defaultValue={slabRate.pricePerUnit}
+                              type="number"
+                              onChange={(e) => {
+                                setSlabs(
+                                  (prev: ECSlab[] | IndustrialSlab[]) => {
+                                    var updatedUnitCharge = prev.map((slab) => {
+                                      if (slab.range == slabRate.range) {
+                                        slab.pricePerUnit = Number(
+                                          e.target.value
+                                        );
+                                      }
+
+                                      return slab;
+                                    });
+
+                                    return updatedUnitCharge;
                                   }
-
-                                  return slab;
-                                });
-
-                                return updatedUnitCharge;
-                              });
-                            }}
-                          />
-                        </Td>
-                      </Tr>
-                    ))}
-                    {/* <Tr key={`${consumerType} rate valid till`}>
-                      <Td>Valid Till</Td>
-                      <Td isNumeric>
-                        <Input
-                          maxW="20ch"
-                          textAlign="right"
-                          type="date"
-                        />
-                      </Td>
-                    </Tr> */}
+                                );
+                              }}
+                            />
+                          </Td>
+                        </Tr>
+                      ))}
                   </Tbody>
                 </Table>
               </TableContainer>
