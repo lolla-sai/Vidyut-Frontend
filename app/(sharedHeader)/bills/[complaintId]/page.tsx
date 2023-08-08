@@ -237,8 +237,8 @@ function ComplaintDetail({ params }: { complaintId: string }) {
         "http://localhost:8080/api/admin/updateComplaintStatus",
         {
           status: type,
-          complaintId: params.complaintId
-        } as { status: "Resolve" | "Rejected", complaintId: string },
+          complaintId: params.complaintId,
+        } as { status: "Resolve" | "Rejected"; complaintId: string },
         { withCredentials: true }
       )
       .then(({ data }) => {
@@ -281,7 +281,7 @@ function ComplaintDetail({ params }: { complaintId: string }) {
     console.log(complaint.data);
   }, [complaint.data]);
 
-  if (complaint.isLoading) {
+  if (complaint.isLoading || complaint.isError) {
     return <Loader text="Loading Bill" />;
   }
 
