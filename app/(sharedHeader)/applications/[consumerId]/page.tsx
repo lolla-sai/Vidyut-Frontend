@@ -7,7 +7,6 @@ import {
   ButtonGroup,
   HStack,
   Input,
-  Select,
   SimpleGrid,
   Spinner,
   Text,
@@ -473,32 +472,34 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
             )}
 
             {/* Rejection Reason */}
-            <Box>
-              <Text minW="15ch" fontWeight="semibold" mb="2">
-                Rejection Reason{" "}
-                <span
-                  style={{
-                    color: "red",
+            {!(consumerDetail.rejectionReason === null) && (
+              <Box>
+                <Text minW="15ch" fontWeight="semibold" mb="2">
+                  Rejection Reason{" "}
+                  <span
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    *
+                  </span>
+                  :
+                </Text>
+                <Textarea
+                  defaultValue={consumerDetail.rejectionReason || ""}
+                  maxW="500px"
+                  resize="none"
+                  onChange={(e) => {
+                    setConsumerDetail((prev) => {
+                      if (prev) {
+                        prev.rejectionReason = e.target.value;
+                      }
+                      return prev;
+                    });
                   }}
-                >
-                  *
-                </span>
-                :
-              </Text>
-              <Textarea
-                defaultValue={consumerDetail.rejectionReason || ""}
-                maxW="500px"
-                resize="none"
-                onChange={(e) => {
-                  setConsumerDetail((prev) => {
-                    if (prev) {
-                      prev.rejectionReason = e.target.value;
-                    }
-                    return prev;
-                  });
-                }}
-              ></Textarea>
-            </Box>
+                ></Textarea>
+              </Box>
+            )}
           </Box>
         </SimpleGrid>
       </Box>

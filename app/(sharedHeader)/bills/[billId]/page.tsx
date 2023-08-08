@@ -1,6 +1,7 @@
 "use client";
 
 import CustomInput from "@/components/CustomInput";
+import Loader from "@/components/Loader";
 import { bills } from "@/data/dummy";
 import { getBill } from "@/services/bills.services";
 import {
@@ -84,22 +85,28 @@ function BillDetail({ params }: { params: { billId: string } }) {
     },
   });
 
+  const formik = useFormik({
+    initialValues: {
+      currentReading: bill.data?.currentReading,
+      slabs: [],
+    },
+    onSubmit(values) {
+      console.log(values);
+    },
+  });
+
   useEffect(() => {
-    console.log(bill);
-  }, [bill]);
+    if (bill.data?.currentReading) {
+      console.log(bill.data);
+      formik.setValues({
+        currentReading: bill.data.currentReading,
+        slabs: bill.data.rateDoc.slabs,
+      });
+    }
+  }, [bill.data]);
 
   if (bill.isLoading) {
-    return (
-      <>
-        {/* Loading Spinner */}
-        <Flex align="center" justify="center" p="4" my="12">
-          <HStack spacing="4">
-            <Spinner size="lg" />
-            <Text>Loading Bill</Text>
-          </HStack>
-        </Flex>
-      </>
-    );
+    return <Loader text="Loading Bill" />;
   }
 
   return (
@@ -186,89 +193,21 @@ function BillDetail({ params }: { params: { billId: string } }) {
           )}
         </Box>
 
-        <SimpleGrid columns={[1, null, null, 2]} spacing="4">
-          <Box mr="8">
+        <Flex direction={{ base: "column", lg: "row" }} gap="4">
+          <Box mr="8" flexGrow="1">
             {/* Meter Number */}
             <CustomInputSimple
               label="Meter Number: "
               value={bill.data.meterNumber.toString()}
             />
 
-            {/* Meter Reading */}
-            <CustomInputSimple
-              label="Meter Reading: "
-              value={bill.data.currentReading.toString()}
-              readOnly={false}
+            <CustomInput
+              label="Meter Reading"
+              fieldName="currentReading"
+              formik={formik}
+              legacy={true}
             />
 
-            {/* Table with breakages */}
-            <TableContainer
-              my="8"
-              border="1px"
-              borderColor="gray.300"
-              p="4"
-              rounded="xl"
-            >
-              <Table variant="simple">
-                <TableCaption>Energy Charges in Bill Calculation</TableCaption>
-                <Thead>
-                  <Tr>
-                    <Th fontSize="lg" isNumeric>
-                      Quantity
-                    </Th>
-                    <Th fontSize="lg" isNumeric>
-                      Rate
-                    </Th>
-                    <Th fontSize="lg" isNumeric>
-                      Amount
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {bill.data.breakage.map((slabRate) => (
-                    <Tr key={slabRate.rate}>
-                      <Td isNumeric>{slabRate.quantity}</Td>
-                      <Td isNumeric>
-                        <Input
-                          maxW="20ch"
-                          textAlign="right"
-                          defaultValue={slabRate.rate}
-                          type="number"
-                          onChange={(e) => {}}
-                        />
-                      </Td>
-                      <Td isNumeric fontWeight="bold">
-                        {slabRate.amount}
-                      </Td>
-                    </Tr>
-                  ))}
-                  <Tr>
-                    <Td></Td>
-                    <Td isNumeric colSpan={2}>
-                      Total:{" "}
-                      <Text as="span" fontWeight="bold">
-                        Rs. {bill.data.totalCharge}
-                      </Text>
-                    </Td>
-                  </Tr>
-                </Tbody>
-              </Table>
-            </TableContainer>
-
-            {/* Save Changes Button */}
-            <Button
-              leftIcon={<FiSave size="20" />}
-              colorScheme="green"
-              variant="solid"
-              size="lg"
-              my="4"
-              // onClick={() => updateConsumerDetails()}
-            >
-              Save
-            </Button>
-          </Box>
-
-          <Box>
             <CustomInputSimple label="Name" value={bill.data.fullName} />
             <CustomInputSimple
               label="Consumer ID: "
@@ -276,10 +215,78 @@ function BillDetail({ params }: { params: { billId: string } }) {
             />
             <CustomInputSimple
               label="Subsidy Discount"
-              value={bill.data.subsidyDiscount}
+              value={bill.data.subsidyDiscount || 0}
             />
+
+            {/* Save Changes Button */}
+            <Button
+              colorScheme="green"
+              variant="solid"
+              size="lg"
+              my="4"
+              w="full"
+              onClick={formik.handleSubmit}
+            >
+              Update Bill
+            </Button>
           </Box>
-        </SimpleGrid>
+
+          <Box flexGrow="2" mr="4">
+            {/* Table with breakages */}
+            <TableContainer
+              // my="8"
+              border="1px"
+              borderColor="gray.300"
+              p="4"
+              rounded="xl"
+            >
+              <Table variant="simple">
+                <TableCaption>
+                  Rate Chart used to calculate the bill
+                </TableCaption>
+                <Thead>
+                  <Tr>
+                    {/* <Th isNumeric>Quantity</Th> */}
+                    <Th isNumeric>Range</Th>
+                    <Th isNumeric>Rate (Price per unit)</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {bill.data.rateDoc.slabs.map((slabRate, index) => (
+                    <Tr key={slabRate.range}>
+                      <Td isNumeric>{slabRate.range}</Td>
+                      <Td isNumeric>
+                        <Input
+                          maxW="20ch"
+                          value={slabRate.pricePerUnit}
+                          // value={formik.values.rates[index]}
+                          onChange={(e) => {
+                            console.log(formik.values.slabs);
+
+                            formik.setFieldValue(
+                              "slabs",
+                              formik.values.slabs.map((s) => {
+                                if (s.range === slabRate.range) {
+                                  return {
+                                    ...s,
+                                    pricePerUnit: e.target.value,
+                                  };
+                                }
+                                return s;
+                              })
+                            );
+                          }}
+                          textAlign="right"
+                          type="number"
+                        />
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Flex>
       </Box>
     </Box>
   );

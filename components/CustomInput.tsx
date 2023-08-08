@@ -12,19 +12,21 @@ export default function CustomInput({
   fieldName,
   formik,
   required = false,
+  legacy = false,
   ...inputProps
 }: {
   label: string;
   fieldName: string;
   formik: any;
   required?: boolean;
+  legacy?: boolean;
 }) {
   return (
     <FormControl
       mb="4"
       isInvalid={formik.touched[fieldName] && formik.errors[fieldName]}
     >
-      <HStack spacing="4">
+      <HStack spacing={legacy ? "1" : "4"}>
         <FormLabel minW="15ch" mb="0" htmlFor={fieldName}>
           {label}
           {required ? (
