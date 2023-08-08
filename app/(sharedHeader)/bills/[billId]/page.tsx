@@ -7,6 +7,7 @@ import { getBill } from "@/services/bills.services";
 import {
   Box,
   Button,
+  ButtonGroup,
   Flex,
   HStack,
   Input,
@@ -90,6 +91,18 @@ function BillDetail({ params }: { params: { billId: string } }) {
       currentReading: bill.data?.currentReading,
       slabs: [],
     },
+    validationSchema: Yup.object({
+      currentReading: Yup.number()
+        .min(1, "Reading Can't be negative")
+        .max(1000000, "Reading Too Huge")
+        .required("Current Reading is required field"),
+      slabs: Yup.array().of(
+        Yup.object().shape({
+          range: Yup.string(),
+          pricePerUnit: Yup.number(),
+        })
+      ),
+    }),
     onSubmit(values) {
       console.log(values);
     },
@@ -120,6 +133,35 @@ function BillDetail({ params }: { params: { billId: string } }) {
 
       <Box my="4">
         {/* Bill ID the consumer type */}
+        <Box>
+          <HStack justify="space-between" my="6">
+            <HStack>
+              <Text fontSize="2xl">
+                Complaint ID:{" "}
+                <Text as="span" fontWeight="bold" ml="2">
+                  {bill.data.billDocId}
+                </Text>
+              </Text>
+              <Text
+                px="4"
+                py="2"
+                bg="black"
+                color="white"
+                w="fit-content"
+                rounded="3xl"
+                fontSize="xs"
+                fontWeight="bold"
+              >
+                {"Pending".toUpperCase()}
+              </Text>
+            </HStack>
+            <ButtonGroup variant="outline" spacing="6">
+              <Button colorScheme="green">Resolve</Button>
+              <Button colorScheme="red">Reject</Button>
+            </ButtonGroup>
+          </HStack>
+        </Box>
+
         <HStack align="center" spacing="4" mb="4">
           <Text fontSize="2xl">
             Bill ID:
@@ -139,8 +181,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
             fontSize="xs"
             fontWeight="bold"
           >
-            {"Domestic".toUpperCase()}
-            {/* {bill.consumerDetail.consumerType.toUpperCase()} */}
+            {bill.data.consumerType.toUpperCase()}
           </Text>
         </HStack>
 
@@ -204,6 +245,7 @@ function BillDetail({ params }: { params: { billId: string } }) {
             <CustomInput
               label="Meter Reading"
               fieldName="currentReading"
+              type="number"
               formik={formik}
               legacy={true}
             />
@@ -252,24 +294,22 @@ function BillDetail({ params }: { params: { billId: string } }) {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {bill.data.rateDoc.slabs.map((slabRate, index) => (
+                  {formik.values.slabs.map((slabRate, index) => (
                     <Tr key={slabRate.range}>
                       <Td isNumeric>{slabRate.range}</Td>
                       <Td isNumeric>
                         <Input
                           maxW="20ch"
-                          value={slabRate.pricePerUnit}
+                          value={slabRate.pricePerUnit.toString()}
                           // value={formik.values.rates[index]}
                           onChange={(e) => {
-                            console.log(formik.values.slabs);
-
                             formik.setFieldValue(
                               "slabs",
                               formik.values.slabs.map((s) => {
                                 if (s.range === slabRate.range) {
                                   return {
                                     ...s,
-                                    pricePerUnit: e.target.value,
+                                    pricePerUnit: parseFloat(e.target.value),
                                   };
                                 }
                                 return s;

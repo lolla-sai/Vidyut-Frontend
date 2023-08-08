@@ -30,6 +30,7 @@ import { FaUserAlt } from "react-icons/fa";
 import NextLink from "next/link";
 import { IconType } from "react-icons";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 interface LinkItemProps {
   name: string;
@@ -71,8 +72,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       h="full"
       {...rest}
     >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text
+      <Flex h="24" alignItems="center" mx="8" justifyContent="space-between">
+        {/* <Text
           fontSize="2xl"
           fontFamily="monospace"
           fontWeight="bold"
@@ -81,7 +82,19 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           as={NextLink}
         >
           Vidyut
-        </Text>
+        </Text> */}
+
+        <Box py="10">
+          <Image
+            src="assets/vidyut-logo.svg"
+            width={200}
+            height={100}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </Box>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
@@ -111,8 +124,8 @@ const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        bg={pathName === href ? "orange.500" : "white"}
-        color={pathName === href ? "white" : "black"}
+        bg={pathName.indexOf(href) != -1 ? "orange.500" : "white"}
+        color={pathName.indexOf(href) != -1 ? "white" : "black"}
         _hover={{
           bg: "orange.600",
           color: "white",
