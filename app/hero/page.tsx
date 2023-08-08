@@ -285,7 +285,7 @@ export default function CallToActionWithAnnotation() {
               <Box as="a" href={'/hero'}>
                 Home
               </Box>
-              <Box as="a" href={'#'}>
+              <Box as="a" href={'/about'}>
                 About
               </Box>
               <Box as="a" href={'/complaints'}>

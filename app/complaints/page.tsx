@@ -253,7 +253,7 @@ export default function ComplaintsPage() {
         />
       </FormControl>
       {otp || otpSent ? (
-        <Button onClick={verifyOtp} colorScheme="blue">
+        <Button onClick={verifyOtp} colorScheme="orange">
           Submit
         </Button>
       ) : (
