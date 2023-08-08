@@ -67,7 +67,7 @@ const Card = ({ heading, description, icon, href }: CardProps) => {
             {description}
           </Text>
         </Box>
-        <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
+        <Button variant={'link'} colorScheme={'orange'} size={'sm'}>
           Learn more
         </Button>
       </Stack>
@@ -215,20 +215,22 @@ export default function CallToActionWithAnnotation() {
           <Stack direction={'row'}>
             <Link href="/registration">
               <Button
-                bg={'blue.400'}
+                bg={'orange.400'}
                 rounded={'full'}
                 color={'white'}
-                _hover={{ bg: 'blue.500' }}>
+                _hover={{ bg: 'orange.500' }}>
                 Register Today
               </Button>
             </Link>
+            <Link href="/fetch-bill">
             <Button
               bg={'whiteAlpha.300'}
               rounded={'full'}
               color={'white'}
               _hover={{ bg: 'whiteAlpha.500' }}>
-              Show me more
+              Get Bill
             </Button>
+            </Link>
           </Stack>
         </Stack>
       </VStack>
