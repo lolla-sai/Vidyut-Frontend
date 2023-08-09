@@ -31,6 +31,7 @@ import NextLink from "next/link";
 import { IconType } from "react-icons";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 interface LinkItemProps {
   name: string;
@@ -84,15 +85,18 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Text> */}
 
         <Box py="10">
-          <Image
-            src="/assets/vidyut-logo.svg"
-            width={200}
-            height={100}
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
+          <Link href="/">
+            <Image
+              src="/assets/vidyut-logo.svg"
+              width={200}
+              height={100}
+              alt="Logo"
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </Link>
         </Box>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
