@@ -16,6 +16,9 @@ import {
   useToast,
   Spinner,
   Input,
+  Tag,
+  TagCloseButton,
+  TagLabel,
 } from "@chakra-ui/react";
 
 import { AiFillShop, AiFillHome } from "react-icons/ai";
@@ -23,9 +26,9 @@ import { BiSolidFactory } from "react-icons/bi";
 import { useRouter } from "next-nprogress-bar";
 import { useQuery } from "react-query";
 import { getCurrentApplicationList } from "@/services/admin.service";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { User } from "@/data/models";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 
 function getIconFromConsumerType(consumerType: ConsumerType): React.ReactNode {
   if (consumerType === "Domestic") {
@@ -37,7 +40,17 @@ function getIconFromConsumerType(consumerType: ConsumerType): React.ReactNode {
   }
 }
 
+type filterType = {
+  consumerId: string;
+  phoneNumber: string;
+};
+
 export default function Home() {
+  const [filters, setFilter] = useState<filterType>({
+    consumerId: "Sai",
+    phoneNumber: "9404",
+  });
+
   const router = useRouter();
   const toast = useToast();
   const applications = useQuery({
@@ -89,7 +102,7 @@ export default function Home() {
         maxH={"250px"}
         overflowX="auto"
       >
-        {Array(5)
+        {Array(2)
           .fill(0)
           .map((item, index) => (
             <Box key={index}>
@@ -112,30 +125,68 @@ export default function Home() {
         Here, you can find all new applications
       </Text>
 
+      {/* Filters */}
+      <HStack>
+        <HStack spacing={4}>
+          {filters.consumerId !== "" && (
+            <Tag
+              size="lg"
+              borderRadius="full"
+              mb="8"
+              variant="solid"
+              colorScheme="teal"
+              onClick={() => {
+                setFilter((prevFilter) => ({ ...prevFilter, consumerId: "" }));
+              }}
+            >
+              <TagLabel>C.A. Number: {filters.consumerId}</TagLabel>
+              <TagCloseButton />
+            </Tag>
+          )}
+        </HStack>
+      </HStack>
+
       {/* Applications */}
       <TableContainer rounded="xl" border="1px" borderColor="orange.100">
-        <Box overflowY="auto" maxHeight="400px">
+        <Box overflowY="auto">
           <Table variant="simple" minH={"280px"}>
             <Thead bg="orange.400" position="sticky" top={0}>
               <Tr>
                 <Th color="gray.100" isNumeric position="relative">
                   Consumer Type
-                  {/* <Box
-                    position="absolute"
-                    bg="orange.100"
-                    top="100%"
-                    color="black"
-                    p="2"
-                  >
-                    <Input placeholder="Enter Search Key" size="sm" />
-                  </Box> */}
                 </Th>
                 <Th color="gray.100" isNumeric>
                   Meter Number
                 </Th>
                 <Th color="gray.100">Full Name</Th>
-                <Th color="gray.100" isNumeric>
+                <Th
+                  color="gray.100"
+                  data-filtername="consumerId"
+                  isNumeric
+                  onClick={(e) => console.log(e.target.dataset["filtername"])}
+                >
                   C.A. Number
+                  <Box
+                    position="absolute"
+                    bg="orange.200"
+                    top="100%"
+                    color="black"
+                    p="2"
+                    w="fit-content"
+                  >
+                    <Input
+                      placeholder="Enter Search Key"
+                      size="sm"
+                      value={filters.consumerId}
+                      onChange={(e) => {
+                        setFilter((prevFilter: filterType) => ({
+                          ...prevFilter,
+                          consumerId: e.target.value,
+                        }));
+                        // filters["consumerId"] = e.target.value;
+                      }}
+                    />
+                  </Box>
                 </Th>
                 <Th color="gray.100" isNumeric>
                   Phone Number

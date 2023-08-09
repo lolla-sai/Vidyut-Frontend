@@ -115,14 +115,17 @@ export default function Footer() {
       >
         <Logo />
         <Stack direction={"row"} spacing={6}>
-          <Box as="a" href={"/hero"}>
+          <Box as={Link} href={"/hero"}>
             Home
           </Box>
-          <Box as="a" href={"/about"}>
+          <Box as={Link} href={"/about"}>
             About
           </Box>
-          <Box as="a" href={"/complaints"}>
+          <Box as={Link} href={"/complaints"}>
             Complaints
+          </Box>
+          <Box as={Link} href={"/auth/login"}>
+            Admin
           </Box>
         </Stack>
       </Container>
