@@ -14,7 +14,6 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { redirect } from "next-nprogress-bar";
 import { useRouter } from "next-nprogress-bar";
 
 export default function SplitScreen() {
@@ -57,7 +56,7 @@ export default function SplitScreen() {
           </FormControl>
           <Stack spacing={6}>
             <Button
-              colorScheme={"blue"}
+              colorScheme={"orange"}
               variant={"solid"}
               onClick={() => {
                 setFetchedBill(true);

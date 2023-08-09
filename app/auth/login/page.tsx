@@ -64,10 +64,10 @@ export default function SplitScreen() {
               justify={"space-between"}
             >
               <Checkbox>Remember me</Checkbox>
-              {/* <Text color={'blue.500'}>Forgot password?</Text> */}
+              {/* <Text color={'orange.500'}>Forgot password?</Text> */}
             </Stack>
             <Button
-              colorScheme={"blue"}
+              colorScheme={"orange"}
               variant={"solid"}
               onClick={() => signIn()}
             >
