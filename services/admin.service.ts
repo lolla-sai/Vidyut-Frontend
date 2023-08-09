@@ -17,7 +17,10 @@ export const getCurrentApplicationList = async () => {
     })
   ).data;
 
-  return applications.fetchedConsumers;
+  return {
+    fetchedConsumers: applications.fetchedConsumers,
+    stats: applications.stats,
+  };
 };
 
 export const getConsumerApplication = async ({
@@ -52,6 +55,6 @@ export const getComplaints = async () => {
     })
   ).data;
 
-  console.log(complaints.complaints, "COMPLAINTS")
+  console.log(complaints.complaints, "COMPLAINTS");
   return complaints.complaints;
 };

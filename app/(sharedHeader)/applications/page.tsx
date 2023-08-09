@@ -135,9 +135,9 @@ export default function Home() {
     <>
       <Box maxW="7xl" mx={'auto'} pt={5} px={{ base: 2, sm: 12, md: 17 }}>
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 5, lg: 8 }}>
-          <StatsCard title={'Approved Applications'} stat={'50'} icon={<BsPerson size={'3em'} />} />
-          <StatsCard title={'Pending Applications'} stat={'98'} icon={<FiServer size={'3em'} />} />
-          <StatsCard title={'Complaints'} stat={'7'} icon={<AiOutlineIssuesClose size={'3em'} />} />
+          <StatsCard title={'Approved Applications'} stat={applications.data?.stats.totalApplications} icon={<BsPerson size={'3em'} />} />
+          <StatsCard title={'Pending Applications'} stat={applications.data?.stats.totalPendingApplications} icon={<FiServer size={'3em'} />} />
+          <StatsCard title={'Complaints'} stat={applications.data?.stats.totalComplaints} icon={<AiOutlineIssuesClose size={'3em'} />} />
         </SimpleGrid>
       </Box>
       
@@ -195,7 +195,7 @@ export default function Home() {
                   </Td>
                 </Tr>
               ) : (
-                applications.data?.map(
+                applications.data?.fetchedConsumers.map(
                   (application: User & { consumerId: string }) => (
                     <Tr
                       _hover={{

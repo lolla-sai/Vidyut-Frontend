@@ -52,6 +52,7 @@ function Bills() {
   }, []);
 
   const bills = useQuery("Bills", getBills, {
+    refetchOnWindowFocus: true,
     onError({ response, code }: { code: string; response: AxiosResponse }) {
       if (response && response.status === 400) {
         toast({
@@ -107,6 +108,7 @@ function Bills() {
             status: "success",
             isClosable: true,
           });
+          bills.refetch();
         })
         .catch((err) => {
           console.log(err);

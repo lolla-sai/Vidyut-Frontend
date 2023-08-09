@@ -91,9 +91,7 @@ function page({
   const [slabs, setSlabs] = useState<
     Array<ECSlab> | Array<IndustrialSlab> | undefined
   >(rateCard?.slabs);
-  const [validTill, setValidTill] = useState<string>(
-    moment().format("MM-DD-YYYY").toString()
-  );
+  const [validTill, setValidTill] = useState<null | string>(null);
   const toast = useToast();
   const router = useRouter();
 
@@ -133,7 +131,7 @@ function page({
           fixedChargeRate: fixedChargeRate,
           slabs: rateCard?.slabs,
           rateType: consumerType,
-          validTill: validTill,
+          validTill: validTill == null ? rateCard?.validTill : validTill,
         } as
           | CreateOrUpdateDomesticRate
           | CreateOrUpdateCommercialRate
@@ -150,6 +148,7 @@ function page({
             status: "success",
             isClosable: true,
           });
+          rates.refetch();
         }
       })
       .catch(({ response }) => {
@@ -191,6 +190,11 @@ function page({
     setFixedChargeRate(rateCard?.fixedChargeRate);
     setSlabs(rateCard?.slabs);
     console.log(rateCard, "RATE CARD CHANGED");
+    console.log(
+      moment(rateCard?.validTill).format("MM-DD-YYYY"),
+      rateCard?.validTill,
+      "VALID TILL"
+    );
   }, [rateCard]);
 
   return (
@@ -208,12 +212,15 @@ function page({
               switch (e.target.value as ConsumerType) {
                 case "Commercial":
                   setConsumerType("Commercial");
+                  rates.refetch();
                   break;
                 case "Domestic":
                   setConsumerType("Domestic");
+                  rates.refetch();
                   break;
                 case "Industrial":
                   setConsumerType("Industrial");
+                  rates.refetch();
                   break;
                 default:
                   setConsumerType(null);
@@ -282,12 +289,12 @@ function page({
                         Valid Till:
                       </Text>
                       <Input
-                        key={rateCard?.id}
+                        key={rateCard?.validTill}
                         type="date"
                         maxW="17ch"
                         defaultValue={moment(rateCard?.validTill)
-                          .toISOString()
-                          .substring(0, 10)}
+                          .format("YYYY-MM-DD")
+                          .toString()}
                         onChange={(e) => {
                           setValidTill(
                             moment(e.target.value)
@@ -393,15 +400,11 @@ function page({
                           <></>
                         ) : (
                           <Input
-                            key={rateCard?.id}
+                            key={rateCard?.validTill}
                             type="date"
-                            defaultValue={
-                              rateCard?.validTill
-                                ? moment(rateCard?.validTill)
-                                    .toISOString()
-                                    .substring(0, 10)
-                                : ""
-                            }
+                            defaultValue={moment(rateCard?.validTill)
+                              .format("YYYY-MM-DD")
+                              .toString()}
                             onChange={(e) => {
                               setValidTill(
                                 moment(e.target.value)

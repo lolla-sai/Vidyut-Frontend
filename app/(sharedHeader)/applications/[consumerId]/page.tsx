@@ -90,6 +90,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
               isClosable: true,
             });
           }
+          consumer.refetch();
         })
         .catch(({ response }) => {
           console.log(response);
@@ -140,6 +141,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
               isClosable: true,
             });
           }
+          consumer.refetch();
         })
         .catch(({ response }) => {
           console.log(response);
@@ -189,6 +191,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
             isClosable: true,
           });
         }
+        consumer.refetch();
       })
       .catch(({ response }) => {
         console.log(response);
