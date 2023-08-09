@@ -15,6 +15,7 @@ import {
   Td,
   useToast,
   Spinner,
+  Input,
 } from "@chakra-ui/react";
 
 import { AiFillShop, AiFillHome } from "react-icons/ai";
@@ -117,8 +118,17 @@ export default function Home() {
           <Table variant="simple" minH={"280px"}>
             <Thead bg="orange.400" position="sticky" top={0}>
               <Tr>
-                <Th color="gray.100" isNumeric>
+                <Th color="gray.100" isNumeric position="relative">
                   Consumer Type
+                  {/* <Box
+                    position="absolute"
+                    bg="orange.100"
+                    top="100%"
+                    color="black"
+                    p="2"
+                  >
+                    <Input placeholder="Enter Search Key" size="sm" />
+                  </Box> */}
                 </Th>
                 <Th color="gray.100" isNumeric>
                   Meter Number
