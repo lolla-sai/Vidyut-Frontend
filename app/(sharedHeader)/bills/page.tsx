@@ -184,7 +184,14 @@ function Bills() {
             >
               Generate Bills
             </Button>
-            <Button w="full" colorScheme="red" onClick={() => setFlatFile([])}>
+            <Button
+              w="full"
+              colorScheme="red"
+              onClick={() => {
+                setFlatFile([]);
+                setFailedBills([]);
+              }}
+            >
               Cancel
             </Button>
           </VStack>

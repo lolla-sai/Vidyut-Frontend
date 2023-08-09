@@ -11,12 +11,11 @@ import {
   Stack,
   Icon,
   useColorModeValue,
-  createIcon,
 } from '@chakra-ui/react'
 
 
 import { ReactElement } from 'react';
-import { FcCustomerSupport, FcServices, FcSerialTasks, FcList } from "react-icons/fc";
+import { FcCustomerSupport, FcServices, FcSerialTasks, FcList, FcApproval } from "react-icons/fc";
 import {
   Flex,
   Image,
@@ -108,13 +107,13 @@ export default function CallToActionWithAnnotation() {
               </Button>
             </Link>
             <Link href="/fetch-bill">
-            <Button
-              bg={'whiteAlpha.300'}
-              rounded={'full'}
-              color={'white'}
-              _hover={{ bg: 'whiteAlpha.500' }}>
-              Get Bill
-            </Button>
+              <Button
+                bg={'whiteAlpha.300'}
+                rounded={'full'}
+                color={'white'}
+                _hover={{ bg: 'whiteAlpha.500' }}>
+                Get Bill
+              </Button>
             </Link>
           </Stack>
         </Stack>
@@ -143,6 +142,11 @@ export default function CallToActionWithAnnotation() {
                 description={'Our user-friendly dashboard displays a comprehensive picture of your electricity usage, prior bills, and payment history. Keep an eye on your consumption patterns and make informed selections.'}
                 href={'#'} />
               <Card
+                heading={'Stable and Reliable'}
+                icon={<Icon as={FcApproval} w={10} h={10} />}
+                description={'Our System has been tested throughout and is reliable and efficient in operation.'}
+                href={'#'} />
+              <Card
                 heading={'Instant Complaint Resolution'}
                 icon={<Icon as={FcCustomerSupport} w={10} h={10} />}
                 description={'Use our site to file complaints or report problems. Our devoted support team provides prompt response and problem resolution.'}
@@ -155,7 +159,7 @@ export default function CallToActionWithAnnotation() {
             </Flex>
           </Container>
         </Box>
-       <Footer></Footer>
+        <Footer></Footer>
       </Stack></>
   )
 }

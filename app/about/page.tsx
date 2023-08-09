@@ -36,95 +36,45 @@ import Footer from "@/components/Footer";
 import { AiFillHeart } from "react-icons/ai";
 
 interface CardProps {
-  heading: string;
-  description: string;
-  icon: ReactElement;
-  href: string;
+    heading: string
+    description: string
+    icon: ReactElement
+    href: string
 }
 
-const Card = ({ heading, description, icon, href }: CardProps) => {
-  return (
-    <Box
-      maxW={{ base: "full", md: "275px" }}
-      w={"full"}
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-      p={5}
-    >
-      <Stack align={"start"} spacing={2}>
-        <Flex
-          w={16}
-          h={16}
-          align={"center"}
-          justify={"center"}
-          color={"clear"}
-          rounded={"full"}
-          bg={useColorModeValue("gray.100", "gray.700")}
-        >
-          {icon}
-        </Flex>
-        <Box mt={2}>
-          <Heading size="md">{heading}</Heading>
-          <Text mt={1} fontSize={"sm"}>
-            {description}
-          </Text>
-        </Box>
-        <Button variant={"link"} colorScheme={"orange"} size={"sm"}>
-          Learn more
-        </Button>
-      </Stack>
-    </Box>
-  );
-};
-
-const SocialButton = ({
-  children,
-  label,
-  href,
-}: {
-  children: ReactNode;
-  label: string;
-  href: string;
-}) => {
-  return (
-    <chakra.button
-      bg={useColorModeValue("blackAlpha.100", "whiteAlpha.100")}
-      rounded={"full"}
-      w={8}
-      h={8}
-      cursor={"pointer"}
-      as={"a"}
-      href={href}
-      display={"inline-flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-      transition={"background 0.3s ease"}
-      _hover={{
-        bg: useColorModeValue("blackAlpha.200", "whiteAlpha.200"),
-      }}
-    >
-      <VisuallyHidden>{label}</VisuallyHidden>
-      {children}
-    </chakra.button>
-  );
-};
-
 const testimonials = [
-  {
-    name: "",
-    role: "Vidyut Pvt. Ltd.",
-    content:
-      "We are your trusted partner in managing electricity billing with simplicity and convenience. At Vidyut, we are dedicated to revolutionizing the way you handle your electricity consumption and billing, making the process more streamlined and transparent.",
-    avatar: "https://w.wallhaven.cc/full/o3/wallhaven-o3ylm7.jpg",
-  },
-  {
-    name: "",
-    role: "Vidyut Pvt. Ltd.",
-    content:
-      "Our mission is to empower individuals and businesses to effortlessly manage their electricity usage and payments. We strive to provide an automated billing platform that offers accurate billing, insightful consumption data, and responsive customer support.",
-    avatar: "https://w.wallhaven.cc/full/o3/wallhaven-o3ylm7.jpg",
-  },
+    {
+        name: 'Hayden F.',
+        role: 'Professor',
+        content:
+          'It really saves me time and effort. It is exactly what I was looking for. Vidyut is the most valuable resource.',
+        avatar:
+          'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80',
+      },
+      {
+        name: 'Kaiser S.',
+        role: 'Entrepreneur',
+        content:
+          "I didn't even need to take effort. We've used Vidyut for the last five years. I have gotten at least 50 times the value from this system.",
+        avatar:
+          'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80',
+      },
+      {
+        name: 'Sheetal L.',
+        role: 'Movie star',
+        content:
+          "Thank you for making it painless, pleasant and most of all, hassle free! I'm good to go. No matter where you go, Vidyut is the coolest, most happening thing around! I love EEZY!",
+        avatar:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=334&q=80',
+      },
+      {
+        name: 'Sairaj T.',
+        role: 'Musician',
+        content:
+          'I am so pleased with this product. Vidyut is both attractive and highly adaptable. Without Vidyut, we would have gone bankrupt by now. Thank you for creating this product!',
+        avatar:
+          'https://images.unsplash.com/photo-1606513542745-97629752a13b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80',
+      },
 ];
 
 const backgrounds = [
@@ -218,61 +168,72 @@ function TestimonialCard(props: TestimonialCardProps) {
 }
 
 export default function GridBlurredBackdrop() {
-  return (
-    <Flex
-      textAlign={"center"}
-      pt={10}
-      justifyContent={"center"}
-      direction={"column"}
-      width={"full"}
-      overflow={"hidden"}
-    >
-      <Box width={{ base: "full", sm: "lg", lg: "xl" }} margin={"auto"}>
-        <chakra.h3
-          fontFamily={"Work Sans"}
-          fontWeight={"bold"}
-          fontSize={32}
-          textTransform={"uppercase"}
-          color={"orange.400"}
-        >
-          Welcome to Vidyut
-        </chakra.h3>
-        <chakra.h1
-          py={5}
-          fontSize={48}
-          fontFamily={"Work Sans"}
-          fontWeight={"bold"}
-          color={useColorModeValue("gray.700", "gray.50")}
-        >
-          You&apos;re in good company
-        </chakra.h1>
-        <chakra.h2
-          margin={"auto"}
-          width={"70%"}
-          fontFamily={"Inter"}
-          fontWeight={"medium"}
-          color={useColorModeValue("gray.500", "gray.400")}
-        >
-          See why over{" "}
-          <chakra.strong color={useColorModeValue("gray.700", "gray.50")}>
-            100+
-          </chakra.strong>{" "}
-          customers trust our service.
-        </chakra.h2>
-      </Box>
-      <SimpleGrid
-        row={{ base: 1, xl: 2 }}
-        spacing={"20"}
-        mt={20}
-        mb={20}
-        mx={"auto"}
-      >
-        {testimonials.map((cardInfo, index) => (
-          <TestimonialCard key={index} {...cardInfo} index={index} />
-        ))}
-      </SimpleGrid>
-
-      <Footer />
-    </Flex>
-  );
+    return (
+        <Stack
+            bg={useColorModeValue('gray.50', 'gray.800')}
+            py={16}
+            px={8}
+            spacing={{ base: 8, md: 10 }}
+            align={'center'}
+            direction={'column'}>
+            <Flex
+                textAlign={'center'}
+                pt={10}
+                justifyContent={'center'}
+                direction={'column'}
+                width={'full'}
+                overflow={'hidden'}>
+                <Box width={{ base: 'full', sm: 'lg', lg: 'xl' }} margin={'auto'}>
+                    <chakra.h3
+                        fontFamily={'Work Sans'}
+                        fontWeight={'bold'}
+                        fontSize={32}
+                        textTransform={'uppercase'}
+                        color={'orange.400'}>
+                        Welcome to Vidyut
+                    </chakra.h3>
+                    <chakra.h1
+                        py={5}
+                        fontSize={48}
+                        fontFamily={'Work Sans'}
+                        fontWeight={'bold'}
+                        color={useColorModeValue('gray.700', 'gray.50')}>
+                        You&apos;re in good company
+                    </chakra.h1>
+                    <chakra.h2
+                        margin={'auto'}
+                        width={'70%'}
+                        fontFamily={'Inter'}
+                        fontWeight={'medium'}
+                        color={useColorModeValue('gray.500', 'gray.400')}>
+                        See why over{' '}
+                        <chakra.strong color={useColorModeValue('gray.700', 'gray.50')}>
+                            100+
+                        </chakra.strong>{' '}
+                        customers trust our service.
+                    </chakra.h2>
+                </Box>
+            </Flex>
+            <Text fontSize={{ base: 'xl', md: '2xl' }} textAlign={'center'} maxW={'3xl'}>
+                We are your trusted partner in managing electricity billing with simplicity and convenience. At Vidyut, we are dedicated to revolutionizing the way you handle your electricity consumption and billing, making the process more streamlined and transparent.
+            </Text>
+            <Text fontSize={{ base: 'xl', md: '2xl' }} textAlign={'center'} maxW={'3xl'}>
+                Our mission is to empower individuals and businesses to effortlessly manage their electricity usage and payments. We strive to provide an automated billing platform that offers accurate billing, insightful consumption data, and responsive customer support.
+            </Text>
+            <Flex
+                textAlign={'center'}
+                pt={10}
+                justifyContent={'center'}
+                direction={'column'}
+                width={'full'}
+                overflow={'hidden'}>
+                <SimpleGrid row={{ base: 1, xl: 2 }} spacing={'20'} mt={16} mb={16} mx={'auto'}>
+                    {testimonials.map((cardInfo, index) => (
+                        <TestimonialCard key={index} {...cardInfo} index={index} />
+                    ))}
+                </SimpleGrid>
+                <Footer></Footer>
+            </Flex>
+        </Stack>
+    )
 }

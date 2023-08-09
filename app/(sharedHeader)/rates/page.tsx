@@ -117,12 +117,21 @@ function page({
   }, [consumerType]);
 
   const handleAddNewRateOrUpdate = async (type: string) => {
+    if (moment().isAfter(moment(validTill))) {
+      toast({
+        title: "Validity cannot be in the past",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
     axios
       .post(
         `http://localhost:8080/api/billing/${type}`,
         {
           fixedChargeRate: fixedChargeRate,
-          slabs: slabs,
+          slabs: rateCard?.slabs,
           rateType: consumerType,
           validTill: validTill,
         } as
@@ -181,6 +190,7 @@ function page({
   useEffect(() => {
     setFixedChargeRate(rateCard?.fixedChargeRate);
     setSlabs(rateCard?.slabs);
+    console.log(rateCard, "RATE CARD CHANGED");
   }, [rateCard]);
 
   return (
@@ -447,21 +457,17 @@ function page({
                               defaultValue={slabRate.pricePerUnit}
                               type="number"
                               onChange={(e) => {
-                                setSlabs(
-                                  (prev: ECSlab[] | IndustrialSlab[]) => {
-                                    var updatedUnitCharge = prev.map((slab) => {
-                                      if (slab.range == slabRate.range) {
-                                        slab.pricePerUnit = Number(
-                                          e.target.value
-                                        );
-                                      }
-
-                                      return slab;
-                                    });
-
-                                    return updatedUnitCharge;
-                                  }
-                                );
+                                setRateCard((prev) => {
+                                  prev?.slabs.map((slab) => {
+                                    if (slab.range == slabRate.range) {
+                                      slab.pricePerUnit = Number(
+                                        e.target.value
+                                      );
+                                    }
+                                  });
+                                  return prev;
+                                });
+                                return;
                               }}
                             />
                           </Td>
