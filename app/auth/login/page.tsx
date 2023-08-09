@@ -11,6 +11,7 @@ import {
   Input,
   Stack,
   Image,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -22,23 +23,31 @@ export default function SplitScreen() {
   const [uname, setUname] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    console.log(uname, password);
-  }, [uname, password]);
+  const toast = useToast();
 
   const signIn = async () => {
     // router.push("/applications");
     if (uname && password) {
-      const res = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        { userName: uname, password: password },
-        { withCredentials: true }
-      );
-
-      if (res.data.success) {
-        router.push("/applications");
-      }
+      axios
+        .post(
+          "http://localhost:8080/api/auth/login",
+          { userName: uname, password: password },
+          { withCredentials: true }
+        )
+        .then(({ data }) => {
+          if (data.success) {
+            router.push("/applications");
+          }
+        })
+        .catch(({ response }) => {
+          if (response.status == 404) {
+            toast({
+              title: response.data.message,
+              status: "error",
+              isClosable: true,
+            });
+          }
+        });
     }
   };
 
