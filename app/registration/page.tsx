@@ -25,6 +25,7 @@ import { useMutation, useQuery } from "react-query";
 import { useRouter } from "next-nprogress-bar";
 import { registerConsumer } from "@/services/admin.service";
 import NextLink from "next/link";
+import Logo from "@/components/Logo";
 
 export default function Registration() {
   const toast = useToast();
@@ -129,15 +130,7 @@ export default function Registration() {
             Registration
           </Heading>
           <NextLink href="/">
-            <Image
-              alt={"Logo"}
-              src={"/assets/logo.jpg"}
-              style={{
-                width: 150,
-                height: 60,
-                objectFit: "contain",
-              }}
-            />
+            <Logo width="150px" />
           </NextLink>
         </HStack>
 

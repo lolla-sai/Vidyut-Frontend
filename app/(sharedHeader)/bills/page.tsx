@@ -21,6 +21,7 @@ import {
   Thead,
   Tr,
   VStack,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import React, { useCallback, useState, useEffect } from "react";
@@ -243,10 +244,10 @@ function Bills() {
                 bills.data.map((bill) => (
                   <Tr
                     _hover={{
-                      bg: "gray.100",
+                      bg: useColorModeValue("gray.100", "gray.800"),
                       cursor: "pointer",
                     }}
-                    color="gray.800"
+                    color={useColorModeValue("gray.800", "gray.100")}
                     key={bill.billId}
                     // onClick={() => router.push(`./bills/${bill.billId}`)}
                     onClick={() =>

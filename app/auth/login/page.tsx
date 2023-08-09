@@ -14,8 +14,9 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { redirect } from "next-nprogress-bar";
 import { useRouter } from "next-nprogress-bar";
+import Logo from "@/components/Logo";
+import NextLink from "next/link";
 
 export default function SplitScreen() {
   const [uname, setUname] = useState<string | null>(null);
@@ -45,6 +46,9 @@ export default function SplitScreen() {
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
         <Stack spacing={4} w={"full"} maxW={"md"}>
+          <NextLink href="/">
+            <Logo width="150px" />
+          </NextLink>
           <Heading fontSize={"2xl"}>Sign in to your Admin Account</Heading>
           <FormControl id="email">
             <FormLabel>Username</FormLabel>

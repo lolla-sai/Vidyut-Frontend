@@ -19,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next-nprogress-bar";
 import NextLink from "next/link";
+import Logo from "@/components/Logo";
 
 interface Complaint {
   id: number;
@@ -197,20 +198,12 @@ export default function ComplaintPage() {
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
       <title>Complaints</title>
       <Box maxW="1200px" p="4" px="8" mx="auto">
-        <HStack mb="8" justify="space-between" align="center">
+        <HStack mb="8" justify="space-between" align="center" spacing="8">
           <Heading fontWeight="extrabold" size="xl" mb="0">
             Complaints
           </Heading>
           <NextLink href="/">
-            <Image
-              alt={"Logo"}
-              src={"/assets/logo.jpg"}
-              style={{
-                width: 150,
-                height: 60,
-                objectFit: "contain",
-              }}
-            />
+            <Logo width="150px" />
           </NextLink>
         </HStack>
         <FormControl isRequired>

@@ -473,9 +473,9 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 </Box>
               </>
             )}
-
             {/* Rejection Reason */}
-            {!(consumerDetail.rejectionReason === null) && (
+            {(consumerDetail.status === "Pending" ||
+              consumerDetail.rejectionReason !== null) && (
               <Box>
                 <Text minW="15ch" fontWeight="semibold" mb="2">
                   Rejection Reason{" "}

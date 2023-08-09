@@ -127,8 +127,16 @@ const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        bg={pathName.indexOf(href) != -1 ? "orange.500" : "white"}
-        color={pathName.indexOf(href) != -1 ? "white" : "black"}
+        bg={
+          pathName.indexOf(href) != -1
+            ? "orange.500"
+            : useColorModeValue("white", "transparent")
+        }
+        color={
+          pathName.indexOf(href) != -1
+            ? "white"
+            : useColorModeValue("black", "gray.100")
+        }
         _hover={{
           bg: "orange.600",
           color: "white",

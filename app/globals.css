@@ -1,0 +1,9 @@
+@keyframes glowing {
+    from {
+        box-shadow: 0 0 3px #fff, 0 0 10px #fff, 0 0 7px #f0f, 0 0 10px #0ff, 0 0 12px #e60073, 0 0 15px #e60073, 0 0 17px #e60073;
+    }
+
+    to {
+        box-shadow: 0 0 5px #fff, 0 0 7px #ff4da6, 0 0 10px #ff4da6, 0 0 12px #ff4da6, 0 0 15px #ff4da6, 0 0 17px #ff4da6, 0 0 20px #ff4da6;
+    }
+}

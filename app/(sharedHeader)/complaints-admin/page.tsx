@@ -19,6 +19,7 @@ import {
   Td,
   HStack,
   Button,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import Loader from "@/components/Loader";
 import { useRouter } from "next-nprogress-bar";
@@ -124,7 +125,7 @@ export default function ComplaintsPage() {
                         (complaint: Complaint & { consumerName: string }) => (
                           <Tr
                             _hover={{
-                              bg: "gray.100",
+                              bg: useColorModeValue("gray.100", "gray.800"),
                               cursor: "pointer",
                             }}
                             onClick={() =>
