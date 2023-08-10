@@ -82,8 +82,34 @@ function Bills() {
     console.log(bills, "Bills");
   }, [bills]);
 
-  const handleBillGeneration = () => {
-    if (flatFile.length !== 0) {
+  const handleBillGeneration = async () => {
+    var invalidFlatFile = false;
+
+    console.log("Checking invalid");
+
+    await Promise.all(
+      flatFile.map(async (reading) => {
+        var validKeys = [
+          "consumerId",
+          "meterNumber",
+          "currentReading",
+          "dateOfReading",
+          "dueDate",
+        ];
+
+        await Promise.all(
+          Object.keys(reading).map((readingKey) => {
+            if (!validKeys.includes(readingKey) && invalidFlatFile == false) {
+              console.log("Invalid");
+              invalidFlatFile = true;
+              return;
+            }
+          })
+        );
+      })
+    );
+
+    if (!invalidFlatFile && flatFile.length !== 0) {
       axios
         .post(
           "http://localhost:8080/api/billing/createBill",
@@ -115,11 +141,19 @@ function Bills() {
           console.log(err);
         });
     } else {
-      toast({
-        title: "Flat file not added",
-        status: "error",
-        isClosable: true,
-      });
+      if (invalidFlatFile) {
+        toast({
+          title: "Invalid flat file structure",
+          status: "error",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Flat file not added",
+          status: "error",
+          isClosable: true,
+        });
+      }
     }
   };
 
