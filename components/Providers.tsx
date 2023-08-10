@@ -1,9 +1,12 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Inter } from "next/font/google";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { theme } from "./theme";
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import { useRouter } from "next-nprogress-bar";
+import { useColorMode } from "@chakra-ui/react";
+import KeyBindingHandler from "./KeyBindingHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 const queryClient = new QueryClient();
@@ -20,6 +23,7 @@ function Providers({ children }: { children: React.ReactNode }) {
       </style>
       <ChakraProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
+          <KeyBindingHandler />
           {children}
           <ProgressBar
             height="4px"

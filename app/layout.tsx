@@ -2,6 +2,7 @@
 import "./globals.css";
 import Providers from "@/components/Providers";
 import { CacheProvider } from "@chakra-ui/next-js";
+import { useEffect } from "react";
 
 export default function RootLayout({
   children,

@@ -84,7 +84,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           Vidyut
         </Text> */}
 
-        <Box py="10">
+        <Box py="10" mb={{ base: "4", md: "0" }}>
           <Link href="/">
             <Image
               src="/assets/vidyut-logo.svg"
