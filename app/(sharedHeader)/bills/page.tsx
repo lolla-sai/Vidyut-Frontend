@@ -36,6 +36,7 @@ function Bills() {
   const [flatFile, setFlatFile] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [failedBills, setFailedBills] = useState([]);
+  const [creatingBill, setCreatingBills] = useState(false);
   const toast = useToast();
   const onDrop = useCallback((acceptedFiles: any) => {
     let file = acceptedFiles[0];
@@ -82,8 +83,34 @@ function Bills() {
     console.log(bills, "Bills");
   }, [bills]);
 
-  const handleBillGeneration = () => {
-    if (flatFile.length !== 0) {
+  const handleBillGeneration = async () => {
+    var invalidFlatFile = false;
+    setCreatingBills(true);
+
+    console.log("Checking invalid");
+    await Promise.all(
+      flatFile.map(async (reading) => {
+        var validKeys = [
+          "consumerId",
+          "meterNumber",
+          "currentReading",
+          "dateOfReading",
+          "dueDate",
+        ];
+
+        await Promise.all(
+          Object.keys(reading).map((readingKey) => {
+            if (!validKeys.includes(readingKey) && invalidFlatFile == false) {
+              console.log("Invalid");
+              invalidFlatFile = true;
+              return;
+            }
+          })
+        );
+      })
+    );
+
+    if (!invalidFlatFile && flatFile.length !== 0) {
       axios
         .post(
           "http://localhost:8080/api/billing/createBill",
@@ -110,16 +137,26 @@ function Bills() {
             isClosable: true,
           });
           bills.refetch();
+          setCreatingBills(false);
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      toast({
-        title: "Flat file not added",
-        status: "error",
-        isClosable: true,
-      });
+      if (invalidFlatFile) {
+        toast({
+          title: "Invalid flat file structure",
+          status: "error",
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Flat file not added",
+          status: "error",
+          isClosable: true,
+        });
+      }
+      setCreatingBills(false);
     }
   };
 
@@ -184,8 +221,9 @@ function Bills() {
               w="full"
               colorScheme="green"
               onClick={() => handleBillGeneration()}
+              disabled={creatingBill}
             >
-              Generate Bills
+              {creatingBill ? "Generating Bills" : "Generate Bills"}
             </Button>
             <Button
               w="full"
