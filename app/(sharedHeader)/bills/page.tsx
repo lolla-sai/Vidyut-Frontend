@@ -36,6 +36,7 @@ function Bills() {
   const [flatFile, setFlatFile] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [failedBills, setFailedBills] = useState([]);
+  const [creatingBill, setCreatingBills] = useState(false);
   const toast = useToast();
   const onDrop = useCallback((acceptedFiles: any) => {
     let file = acceptedFiles[0];
@@ -84,9 +85,9 @@ function Bills() {
 
   const handleBillGeneration = async () => {
     var invalidFlatFile = false;
+    setCreatingBills(true);
 
     console.log("Checking invalid");
-
     await Promise.all(
       flatFile.map(async (reading) => {
         var validKeys = [
@@ -136,6 +137,7 @@ function Bills() {
             isClosable: true,
           });
           bills.refetch();
+          setCreatingBills(false);
         })
         .catch((err) => {
           console.log(err);
@@ -154,6 +156,7 @@ function Bills() {
           isClosable: true,
         });
       }
+      setCreatingBills(false);
     }
   };
 
@@ -218,8 +221,9 @@ function Bills() {
               w="full"
               colorScheme="green"
               onClick={() => handleBillGeneration()}
+              disabled={creatingBill}
             >
-              Generate Bills
+              {creatingBill ? "Generating Bills" : "Generate Bills"}
             </Button>
             <Button
               w="full"
