@@ -6,8 +6,6 @@ _Vidyut is a complete Electricity Billing solution, that provides many features 
 
 ## Demo
 
-Insert gif or link to demo
-
 **Consumer Side**
 
 - New Registration and about page
