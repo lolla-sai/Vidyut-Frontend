@@ -11,7 +11,6 @@ Insert gif or link to demo
 **Consumer Side**
 
 - New Registration and about page
-
 ![Demo Gif](https://i.ibb.co/vdRGnDY/rec-screen-1-1.gif)
 
 - Fetching Bill and Complaints
