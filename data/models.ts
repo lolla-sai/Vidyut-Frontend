@@ -13,6 +13,18 @@ export type Admin = {
 };
 
 export type UserApplicationStatus = "Approved" | "Pending" | "Rejected";
+export type ConsumerType = "Domestic" | "Commercial" | "Industrial";
+
+export type RegistrationData = {
+  fullName: string;
+  email: string;
+  consumerType: ConsumerType;
+  phoneNumber: number | null;
+  address: string | null;
+  phase: 1 | 3;
+  supportingDocs: Array<string>;
+  subsidy: boolean;
+};
 
 export type User = {
   phoneNumber: number;

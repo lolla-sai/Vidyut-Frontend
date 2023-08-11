@@ -339,7 +339,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 type="number"
                 maxW="40ch"
                 size="sm"
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setConsumerDetail((prev) => {
                     if (prev) {
                       prev.phoneNumber = Number(e.target.value);
@@ -359,7 +359,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 defaultValue={consumerDetail.address}
                 maxW="40ch"
                 size="sm"
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setConsumerDetail((prev) => {
                     if (prev) {
                       prev.address = e.target.value;
@@ -395,7 +395,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                 maxW="40ch"
                 size="sm"
                 type="number"
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setConsumerDetail((prev) => {
                     if (prev) {
                       prev.sanctionedLoad = Number(e.target.value);
@@ -436,7 +436,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                     maxW="40ch"
                     size="sm"
                     type="number"
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setConsumerDetail((prev) => {
                         if (prev) {
                           prev.subsidyRate = Number(e.target.value);
@@ -492,7 +492,7 @@ function ApplicationDetails({ params }: { params: { consumerId: string } }) {
                   defaultValue={consumerDetail.rejectionReason || ""}
                   maxW="500px"
                   resize="none"
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setConsumerDetail((prev) => {
                       if (prev) {
                         prev.rejectionReason = e.target.value;

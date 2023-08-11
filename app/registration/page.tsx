@@ -12,7 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React from "react";
-import { useFormik } from "formik";
+import { FormikConfig, useFormik } from "formik";
 import { storage } from "@/config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useRef } from "react";
@@ -26,13 +26,14 @@ import { useRouter } from "next-nprogress-bar";
 import { registerConsumer } from "@/services/admin.service";
 import NextLink from "next/link";
 import Logo from "@/components/Logo";
+import { RegistrationData } from "@/data/models";
 
 export default function Registration() {
   const toast = useToast();
-  const formikRef = useRef(null);
+  // const formikRef = useRef<>(null);
   const router = useRouter();
 
-  const formik = useFormik({
+  const formik = useFormik<RegistrationData>({
     initialValues: {
       fullName: "",
       email: "",
@@ -59,7 +60,7 @@ export default function Registration() {
       phase: Yup.number().oneOf([1, 3]),
       subsidy: Yup.boolean(),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values: RegistrationData) => {
       let urls: Array<{ url: string; fileName: string }> = [];
       if (values.consumerType !== "Domestic") {
         await Promise.all(
@@ -88,8 +89,8 @@ export default function Registration() {
 
   const mutation = useMutation({
     mutationFn: registerConsumer,
-    onMutate: () => formikRef?.current?.setSubmitting(true),
-    onSettled: () => formikRef?.current?.setSubmitting(false),
+    // onMutate: () => formikRef?.current?.setSubmitting(true),
+    // onSettled: () => formikRef?.current?.setSubmitting(false),
     onSuccess: () => {
       toast({
         title: "Application Submitted",
@@ -185,7 +186,7 @@ export default function Registration() {
               fieldName="phase"
               formik={formik}
               required={true}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEventHandler<HTMLSelectElement>) => {
                 console.log(e.target.value);
                 formik.setFieldValue(
                   "phase",

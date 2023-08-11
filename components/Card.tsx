@@ -11,7 +11,7 @@ import {
 interface CardProps {
   heading: string;
   description: string;
-  icon: ReactElement;
+  icon: React.ReactElement;
   href?: string;
 }
 

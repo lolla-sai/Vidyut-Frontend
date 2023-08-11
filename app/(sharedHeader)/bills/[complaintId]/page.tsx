@@ -490,7 +490,9 @@ function ComplaintDetail({ params }: { complaintId: string }) {
                           maxW="20ch"
                           value={slabRate.pricePerUnit.toString()}
                           // value={formik.values.rates[index]}
-                          onChange={(e) => {
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>
+                          ) => {
                             formik.setFieldValue(
                               "slabs",
                               formik.values.slabs.map((s) => {
