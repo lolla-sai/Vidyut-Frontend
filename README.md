@@ -10,7 +10,7 @@ _Vidyut is a complete Electricity Billing solution, that provides many features 
 
 - New Registration and about page
 
-  ![Demo Gif](https://i.ibb.co/vdRGnDY/rec-screen-1-1.gif)
+  ![Demo 1](https://github.com/lolla-sai/Vidyut-Frontend/blob/main/demo/newreg.gif)
 
 - Fetching Bill and Complaints
 
