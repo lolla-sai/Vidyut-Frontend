@@ -11,20 +11,17 @@ Insert gif or link to demo
 **Consumer Side**
 
 - New Registration and about page
-![Demo Gif](https://i.ibb.co/vdRGnDY/rec-screen-1-1.gif)
+  ![Demo Gif](https://i.ibb.co/vdRGnDY/rec-screen-1-1.gif)
 
 - Fetching Bill and Complaints
-
   ![Fetch Bill and complaint](https://i.ibb.co/VQ53VPm/rec-screen-2.gif)
 
 **Admin Side**
 
 - Applications and Complaints
-
   ![Admin Walkthrough 1](https://i.ibb.co/4dtNtmZ/rec-screen-3.gif)
 
 - Bill Generation and Slab Rates
-
   ![Admin Walkthrough 2](https://i.ibb.co/WKmfrsB/rec-screen-3-1.gif)
 
 ## Features
