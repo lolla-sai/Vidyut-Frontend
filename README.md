@@ -4,28 +4,6 @@
 
 _Vidyut is a complete Electricity Billing solution, that provides many features including new consumer registration, billing, complaints etc._
 
-## Demo
-
-**Consumer Side**
-
-- New Registration and about page
-
-  ![Demo 1](https://github.com/lolla-sai/Vidyut-Frontend/blob/main/demo/newreg.gif)
-
-- Fetching Bill and Complaints
-
-  ![Fetch Bill and complaint](https://i.ibb.co/VQ53VPm/rec-screen-2.gif)
-
-**Admin Side**
-
-- Applications and Complaints
-
-  ![Admin Walkthrough 1](https://i.ibb.co/4dtNtmZ/rec-screen-3.gif)
-
-- Bill Generation and Slab Rates
-
-  ![Admin Walkthrough 2](https://i.ibb.co/WKmfrsB/rec-screen-3-1.gif)
-
 ## Features
 
 **Consumer Side**
@@ -51,6 +29,28 @@ _Vidyut is a complete Electricity Billing solution, that provides many features 
 
 - Dark theme support
 - Keyboard Shortcut (Alt + A) to go to admin panel and (Ctrl + Shift + K) to toggle dark theme.
+
+## Demo
+
+**Consumer Side**
+
+- New Registration and about page
+
+  ![Demo 1](https://github.com/lolla-sai/Vidyut-Frontend/blob/main/demo/newreg.gif)
+
+- Fetching Bill and Complaints
+
+  ![Fetch Bill and complaint](https://i.ibb.co/VQ53VPm/rec-screen-2.gif)
+
+**Admin Side**
+
+- Applications and Complaints
+
+  ![Admin Walkthrough 1](https://i.ibb.co/4dtNtmZ/rec-screen-3.gif)
+
+- Bill Generation and Slab Rates
+
+  ![Admin Walkthrough 2](https://i.ibb.co/WKmfrsB/rec-screen-3-1.gif)
 
 ## Tech Stack
 
