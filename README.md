@@ -12,7 +12,7 @@ Insert gif or link to demo
 
 - New Registration and about page
 
-  ![Demo Gif](https://i.ibb.co/vdRGnDY/rec-screen-1-1.gif)
+![Demo Gif](https://i.ibb.co/vdRGnDY/rec-screen-1-1.gif)
 
 - Fetching Bill and Complaints
 
