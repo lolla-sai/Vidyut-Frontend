@@ -69,6 +69,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, run the development server:
 
 ```bash
+npm install
 npm run dev
 # or
 yarn dev
@@ -81,6 +82,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+Then, run the backend server which can be found at [Vidyut Backend](https://github.com/SairajK19/Vidyut-Backend):
+```bash
+npm install
+npm run serve
+# or
+yarn serve
+```
+
+The server will begin on [http://localhost:8080](http://localhost:8080) which will be used by the frontend to communicate with firebase.
 
 ## Deployment
 
@@ -95,6 +106,12 @@ As my first project under industry mentorship from OneShield Inc, I realized the
 Through this project I also learnt Typescript, and the benefits it brings in as a statically typed language.
 
 We won the 2nd place for this, and the prize made it all worth the effort 😊
+
+## Contributors
+
+<a href="https://github.com/lolla-sai/Vidyut-Frontend/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lolla-sai/Vidyut-Frontend" />
+</a>
 
 ## Support
 
