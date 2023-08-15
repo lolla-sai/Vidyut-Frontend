@@ -6,12 +6,12 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCeVmS2DtFaVuXsuZvd29KcwcNluzyo4ro",
-  authDomain: "electricity-billing-syst-ff469.firebaseapp.com",
-  projectId: "electricity-billing-syst-ff469",
-  storageBucket: "electricity-billing-syst-ff469.appspot.com",
-  messagingSenderId: "1036178214169",
-  appId: "1:1036178214169:web:faf229d41a7dfa39584988",
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
 };
 
 // Initialize Firebase
